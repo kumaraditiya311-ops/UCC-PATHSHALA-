@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>UCC · Universe Coaching Centre</title>
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>UCC PATHSHALA</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://kommodo.ai">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* ===== CSS VARIABLES ===== */
     :root {
@@ -53,15 +53,25 @@
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
     body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: background 0.3s, color 0.3s; }
 
-    /* ----- SPLASH SCREEN ----- */
+    /* ----- SPLASH SCREEN (FAST) ----- */
     #splashScreen {
       position:fixed; top:0; left:0; width:100%; height:100%; background:#2563eb; z-index:99999;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 0.8s;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 0.3s;
     }
     #splashScreen.hidden { opacity:0; pointer-events:none; }
-    #splashScreen .splash-logo { width:100px; height:100px; border-radius:28px; background:white; display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:900; color:#2563eb; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-    #splashScreen .splash-title { color:white; margin-top:20px; font-size:1.8rem; font-weight:700; letter-spacing:-0.5px; }
-    #splashScreen .splash-sub { color:rgba(255,255,255,0.7); font-size:1rem; margin-top:4px; }
+    #splashScreen .splash-logo { width:90px; height:90px; border-radius:24px; overflow:hidden; background:white; display:flex; align-items:center; justify-content:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+    #splashScreen .splash-logo img { width:100%; height:100%; object-fit:cover; }
+    #splashScreen .splash-title { color:white; margin-top:16px; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px; }
+    #splashScreen .splash-sub { color:rgba(255,255,255,0.7); font-size:0.9rem; margin-top:2px; }
+
+    /* ===== CSS CHART (No external library) ===== */
+    .chart-container { max-width:400px; margin:16px auto; padding:12px; background:var(--secondary); border-radius:16px; }
+    .chart-bar-group { display:flex; flex-direction:column; gap:8px; }
+    .chart-bar-item { display:flex; align-items:center; gap:10px; }
+    .chart-bar-item .bar-label { width:100px; font-size:0.8rem; font-weight:500; color:var(--text); flex-shrink:0; }
+    .chart-bar-item .bar-track { flex:1; height:20px; background:var(--border); border-radius:40px; overflow:hidden; }
+    .chart-bar-item .bar-fill { height:100%; border-radius:40px; background:var(--primary); transition:width 0.6s ease; width:0%; }
+    .chart-bar-item .bar-value { width:40px; font-size:0.8rem; font-weight:600; color:var(--text); text-align:right; flex-shrink:0; }
 
     /* ----- ERROR PAGE (404) ----- */
     .error-page {
@@ -135,9 +145,6 @@
     .user-profile .logout-btn:hover { background:#b91c1c; transform:scale(0.97); }
     .theme-toggle { background:var(--border); border:none; padding:8px 12px; border-radius:40px; cursor:pointer; font-size:1rem; color:var(--text); transition:0.2s; }
     .theme-toggle:hover { background:var(--secondary); }
-    .app-actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .app-actions button { background:var(--primary); color:white; border:none; padding:6px 14px; border-radius:40px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; }
-    .app-actions button:hover { background:var(--primary-hover); transform:scale(0.95); }
 
     /* Quick access */
     .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:12px; background:var(--secondary); padding:16px 12px; border-radius:40px; margin-bottom:30px; border:1px solid var(--border); }
@@ -177,7 +184,7 @@
     .push-mock { background:#0f172a; color:white; padding:8px 16px 8px 18px; border-radius:60px; display:inline-flex; align-items:center; gap:12px; font-size:0.75rem; }
     .push-mock i { color:#facc15; }
 
-    /* Admin-only elements */
+    /* Admin-only */
     .admin-only { display: none; }
     .admin-only.visible { display: block; }
     .admin-only-inline { display: none; }
@@ -216,7 +223,7 @@
     .delete-btn { background:#dc2626; color:white; border:none; padding:2px 10px; border-radius:40px; cursor:pointer; font-size:0.7rem; }
     .delete-btn:hover { background:#b91c1c; }
 
-    .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-live-form {
+    .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form {
       margin:16px 0; display:flex; flex-wrap:wrap; gap:10px; align-items:center;
     }
     .add-attendance-form input, .add-attendance-form select,
@@ -224,14 +231,13 @@
     .add-timetable-form input, .add-timetable-form select,
     .add-marks-form input, .add-marks-form select,
     .doubt-reply-form input, .doubt-reply-form select,
-    .add-admission-form input, .add-admission-form select,
-    .add-live-form input, .add-live-form select {
+    .add-admission-form input, .add-admission-form select {
       padding:8px 14px; border-radius:40px; border:1px solid var(--border); flex:1; min-width:120px; background:var(--input-bg); color:var(--text);
     }
-    .add-attendance-form button, .add-notice-form button, .add-timetable-form button, .add-marks-form button, .doubt-reply-form button, .add-admission-form button, .add-live-form button {
+    .add-attendance-form button, .add-notice-form button, .add-timetable-form button, .add-marks-form button, .doubt-reply-form button, .add-admission-form button {
       background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s;
     }
-    .add-attendance-form button:hover, .add-notice-form button:hover, .add-timetable-form button:hover, .add-marks-form button:hover, .doubt-reply-form button:hover, .add-admission-form button:hover, .add-live-form button:hover {
+    .add-attendance-form button:hover, .add-notice-form button:hover, .add-timetable-form button:hover, .add-marks-form button:hover, .doubt-reply-form button:hover, .add-admission-form button:hover {
       background:var(--primary-hover);
     }
 
@@ -293,7 +299,15 @@
     .profile-stats { display:flex; gap:20px; flex-wrap:wrap; margin-top:8px; }
     .profile-stats span { background:var(--card-bg); padding:4px 16px; border-radius:40px; font-size:0.8rem; border:1px solid var(--border); }
 
-    .chart-container { max-width:400px; margin:16px auto; }
+    /* ===== CONTACT NUMBER (Student Profile Bottom) ===== */
+    .contact-section {
+      margin-top:12px; padding:12px 16px; background:var(--card-bg); border-radius:16px;
+      border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    }
+    .contact-section .contact-label { font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px; }
+    .contact-section .contact-number { color:var(--primary); font-weight:500; }
+    .contact-section .edit-contact-btn { background:var(--primary); color:white; border:none; padding:4px 14px; border-radius:40px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:4px; }
+    .contact-section .edit-contact-btn:hover { background:var(--primary-hover); transform:scale(0.95); }
 
     /* Bottom Navigation (mobile) */
     .bottom-nav {
@@ -318,26 +332,27 @@
       .security-row { flex-direction:column; align-items:start; }
       .admin-upload-section { padding:18px; }
       .login-box { padding:30px 20px; }
-      .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-live-form { flex-direction:column; align-items:stretch; }
+      .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form { flex-direction:column; align-items:stretch; }
       .bottom-nav { display:flex; }
       .student-profile { flex-direction:column; align-items:center; text-align:center; }
       .profile-stats { justify-content:center; }
-      .app-actions { width:100%; justify-content:flex-start; margin-top:4px; }
+      .contact-section { flex-direction:column; align-items:center; text-align:center; }
     }
     @media (max-width:460px) {
       .quick-grid { grid-template-columns:repeat(2,1fr); }
       .module-grid { grid-template-columns:1fr; }
       .modal-content { padding:16px; }
-      .app-actions button { font-size:0.6rem; padding:4px 10px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ============ SPLASH SCREEN ============ -->
+<!-- ============ SPLASH SCREEN (FAST) ============ -->
 <div id="splashScreen">
-  <div class="splash-logo">UCC</div>
-  <div class="splash-title">Universe Coaching</div>
+  <div class="splash-logo">
+    <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="eager">
+  </div>
+  <div class="splash-title">UCC PATHSHALA</div>
   <div class="splash-sub">9th–12th · Govt Exams</div>
 </div>
 
@@ -353,12 +368,12 @@
 <div id="loginOverlay">
   <div class="login-box">
     <div class="logo-icon" id="loginLogo">
-      <img src="logo.png" alt="UCC Logo" onerror="this.style.display='none'; document.getElementById('loginFallback').style.display='block';">
+      <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="eager" onerror="this.style.display='none'; document.getElementById('loginFallback').style.display='block';">
       <span class="fallback" id="loginFallback">UCC</span>
     </div>
-    <h2>Universe Coaching</h2>
-    <p style="color:var(--text-muted); margin-bottom:6px;">UCC · 9th–12th · Govt Exams</p>
-    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Login to access your dashboard</p>
+    <h2>UCC PATHSHALA</h2>
+    <p style="color:var(--text-muted); margin-bottom:6px;">Universe Coaching Centre</p>
+    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">9th–12th · Govt Exams</p>
     <div class="login-options" id="loginOptions">
       <button class="student-btn" id="studentLoginBtn"><i class="fas fa-user-graduate"></i> Student Login</button>
       <button class="admin-btn" id="adminLoginBtn"><i class="fas fa-user-shield"></i> Admin Login</button>
@@ -394,11 +409,11 @@
   <div class="header">
     <div class="logo-area">
       <div class="logo-icon" id="headerLogo">
-        <img src="logo.png" alt="UCC Logo" onerror="this.style.display='none'; document.getElementById('headerFallback').style.display='block';">
+        <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="lazy" onerror="this.style.display='none'; document.getElementById('headerFallback').style.display='block';">
         <span class="fallback-logo" id="headerFallback">UCC</span>
       </div>
       <div class="coaching-name">
-        <span class="logo-text">Universe Coaching</span>
+        <span class="logo-text">UCC PATHSHALA</span>
         <span class="ucc-badge">UCC</span>
         <span class="badge-gov"><i class="fas fa-graduation-cap"></i> 9th–12th · GOV</span>
       </div>
@@ -410,14 +425,10 @@
         <span id="notifBadge" style="position:absolute; top:-6px; right:-8px; background:#dc2626; color:white; font-size:0.6rem; padding:1px 6px; border-radius:40px; display:none;">0</span>
       </i>
       <div class="avatar-small" id="headerAvatar" style="display:none;" title="Click to change profile picture">
-        <img id="headerAvatarImg" src="" alt="Avatar">
+        <img id="headerAvatarImg" src="" alt="Avatar" loading="lazy">
         <span id="headerAvatarFallback" style="display:none;">A</span>
       </div>
       <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-      <div class="app-actions">
-        <button id="installAppBtn"><i class="fas fa-download"></i> Install App</button>
-        <button class="download-btn" id="downloadHtmlBtn"><i class="fas fa-file-download"></i> Download HTML</button>
-      </div>
     </div>
   </div>
 
@@ -425,7 +436,7 @@
   <div id="studentDashboard" style="display:none;">
     <div class="student-profile">
       <div class="avatar" id="studentAvatar" title="Click to change profile picture">
-        <img id="studentAvatarImg" src="" alt="Avatar">
+        <img id="studentAvatarImg" src="" alt="Avatar" loading="lazy">
         <span id="studentAvatarFallback" style="font-size:30px; font-weight:bold;">S</span>
       </div>
       <div class="info">
@@ -440,6 +451,12 @@
           <button class="btn-soft" id="askDoubtBtn"><i class="fas fa-question-circle"></i> Ask a Doubt</button>
           <button class="btn-soft" id="viewTimetableBtn"><i class="fas fa-calendar-alt"></i> Timetable</button>
           <button class="btn-soft" id="viewMarksBtn"><i class="fas fa-chart-bar"></i> My Marks</button>
+        </div>
+        <!-- ===== CONTACT SECTION (Student Profile Bottom) ===== -->
+        <div class="contact-section" id="contactSection">
+          <span class="contact-label"><i class="fas fa-phone" style="color:var(--primary);"></i> Contact:</span>
+          <span class="contact-number" id="contactNumberDisplay">+91 98765 43210</span>
+          <button class="edit-contact-btn admin-only" id="editContactBtn"><i class="fas fa-pen"></i> Edit</button>
         </div>
       </div>
     </div>
@@ -490,7 +507,6 @@
         <div class="btn-soft" data-action="view-notices"><i class="fas fa-bullhorn"></i> View Notices</div>
       </div>
     </div>
-    <!-- Attendance Management – Admin Only -->
     <div class="module-card admin-only" id="attendanceCard">
       <div class="card-header"><i class="fas fa-clipboard-list"></i><h3>Attendance Mgmt</h3></div>
       <div class="card-body">
@@ -499,7 +515,6 @@
         <div class="btn-soft" data-action="manage-attendance"><i class="fas fa-qrcode"></i> Scan & mark</div>
       </div>
     </div>
-    <!-- Payment card removed -->
   </div>
 
   <!-- Demo & Stats -->
@@ -540,7 +555,6 @@
       <button data-tab="timetable">Timetable</button>
       <button data-tab="marks">Marks</button>
       <button data-tab="doubts">Doubts</button>
-      <button data-tab="liveSettings">Live Settings</button>
     </div>
 
     <!-- Students -->
@@ -635,19 +649,6 @@
         <button id="replyDoubtBtn"><i class="fas fa-reply"></i> Reply</button>
       </div>
     </div>
-
-    <!-- Live Settings -->
-    <div class="tab-content" id="tab-liveSettings">
-      <h4>🔴 Live Video Link Settings</h4>
-      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">Paste the YouTube embed URL that students will see during live classes.</p>
-      <div class="add-live-form">
-        <input type="text" id="liveLinkInput" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" style="flex:2;">
-        <button id="saveLiveLinkBtn"><i class="fas fa-save"></i> Save Link</button>
-      </div>
-      <div id="liveLinkStatus" style="margin-bottom:8px; font-weight:500;"></div>
-      <p><strong>Current Live Link:</strong> <span id="currentLiveLink" style="color:var(--primary); word-break:break-all;"></span></p>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-top:8px;">💡 You can get the embed URL from any YouTube video by clicking "Share" → "Embed" and copying the src URL.</p>
-    </div>
   </div>
 
   <!-- ===== ADMIN UPLOAD & SETTINGS ===== -->
@@ -705,18 +706,42 @@
   </div>
 
   <!-- ===== MODALS ===== -->
-  <div class="modal-overlay" id="liveModal"><div class="modal-content"><span class="close-modal" data-close="liveModal">&times;</span><h3><i class="fas fa-video" style="color:var(--primary);"></i> Live Class</h3><div class="video-title" id="liveTitle">Loading...</div><div class="video-wrapper"><iframe id="liveIframe" src="" allowfullscreen></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🔴 Live streaming now</p></div></div>
+  <div class="modal-overlay" id="liveModal"><div class="modal-content"><span class="close-modal" data-close="liveModal">&times;</span><h3><i class="fas fa-video" style="color:var(--primary);"></i> Live Class</h3><div class="video-title" id="liveTitle">Loading...</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🔴 Live streaming now</p></div></div>
   <div class="modal-overlay" id="recordedModal"><div class="modal-content"><span class="close-modal" data-close="recordedModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Recorded Lectures</h3><input class="search-input" id="videoSearch" placeholder="Search videos by subject or topic..."><div id="recordedList" class="video-list"></div></div></div>
   <div class="modal-overlay" id="materialModal"><div class="modal-content"><span class="close-modal" data-close="materialModal">&times;</span><h3><i class="fas fa-book-open" style="color:var(--primary);"></i> Study Material</h3><p id="materialContent">Loading...</p></div></div>
   <div class="modal-overlay" id="quizModal"><div class="modal-content"><span class="close-modal" data-close="quizModal">&times;</span><h3><i class="fas fa-puzzle-piece" style="color:var(--primary);"></i> Quiz</h3><div id="quizContent"><div class="quiz-question"><p><strong>Q1:</strong> What is the SI unit of force?</p><div class="quiz-options"><button class="quiz-opt" data-correct="false">Newton</button><button class="quiz-opt" data-correct="true">Joule</button><button class="quiz-opt" data-correct="false">Watt</button></div></div><div class="quiz-question"><p><strong>Q2:</strong> Which is a scalar quantity?</p><div class="quiz-options"><button class="quiz-opt" data-correct="true">Speed</button><button class="quiz-opt" data-correct="false">Velocity</button><button class="quiz-opt" data-correct="false">Displacement</button></div></div></div></div></div>
   <div class="modal-overlay" id="reportModal"><div class="modal-content"><span class="close-modal" data-close="reportModal">&times;</span><h3><i class="fas fa-id-card" style="color:var(--primary);"></i> Report Card</h3><div class="report-card" id="reportContent"></div></div></div>
   <div class="modal-overlay" id="attendanceModal"><div class="modal-content"><span class="close-modal" data-close="attendanceModal">&times;</span><h3><i class="fas fa-clipboard-list" style="color:var(--primary);"></i> My Attendance</h3><div id="attendanceViewContent" class="attendance-summary"></div></div></div>
-  <div class="modal-overlay" id="demoModal"><div class="modal-content"><span class="close-modal" data-close="demoModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Free Demo Class</h3><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allowfullscreen></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🎓 Sample demo lecture</p></div></div>
+  <div class="modal-overlay" id="demoModal"><div class="modal-content"><span class="close-modal" data-close="demoModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Free Demo Class</h3><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🎓 Sample demo lecture</p></div></div>
   <div class="modal-overlay" id="noticesModal"><div class="modal-content"><span class="close-modal" data-close="noticesModal">&times;</span><h3><i class="fas fa-bullhorn" style="color:var(--primary);"></i> Notices</h3><div id="noticesList"></div></div></div>
   <div class="modal-overlay" id="timetableModal"><div class="modal-content"><span class="close-modal" data-close="timetableModal">&times;</span><h3><i class="fas fa-calendar-alt" style="color:var(--primary);"></i> Timetable</h3><div id="timetableView"></div></div></div>
   <div class="modal-overlay" id="marksModal"><div class="modal-content"><span class="close-modal" data-close="marksModal">&times;</span><h3><i class="fas fa-chart-bar" style="color:var(--primary);"></i> My Marks</h3><div id="marksView"></div></div></div>
   <div class="modal-overlay" id="doubtModal"><div class="modal-content"><span class="close-modal" data-close="doubtModal">&times;</span><h3><i class="fas fa-question-circle" style="color:var(--primary);"></i> Ask a Doubt</h3><div class="payment-form"><textarea id="doubtQuestion" placeholder="Type your question here..." style="width:100%; padding:12px; border-radius:20px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); min-height:100px;"></textarea><button class="pay-btn" id="submitDoubtBtn" style="margin-top:10px;"><i class="fas fa-paper-plane"></i> Submit Doubt</button><div id="doubtStatus" style="margin-top:8px;"></div><hr style="margin:16px 0; border-color:var(--border);"><h4>Your Doubts</h4><div id="myDoubtsList"></div></div></div></div>
-  <div class="modal-overlay" id="progressModal"><div class="modal-content"><span class="close-modal" data-close="progressModal">&times;</span><h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Progress Tracker</h3><div class="chart-container"><canvas id="progressChart"></canvas></div><div style="margin-top:16px;"><p><strong>Attendance:</strong> <span id="pAtt">0%</span></p><p><strong>Avg Marks:</strong> <span id="pMarks">0%</span></p></div></div></div>
+
+  <!-- ===== PROGRESS MODAL (CSS Chart - FAST) ===== -->
+  <div class="modal-overlay" id="progressModal">
+    <div class="modal-content">
+      <span class="close-modal" data-close="progressModal">&times;</span>
+      <h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Progress Tracker</h3>
+      <div class="chart-container">
+        <div class="chart-bar-group">
+          <div class="chart-bar-item">
+            <span class="bar-label">Attendance</span>
+            <div class="bar-track"><div class="bar-fill" id="progressAttBar" style="width:0%;"></div></div>
+            <span class="bar-value" id="progressAttText">0%</span>
+          </div>
+          <div class="chart-bar-item">
+            <span class="bar-label">Marks</span>
+            <div class="bar-track"><div class="bar-fill" id="progressMarksBar" style="width:0%;"></div></div>
+            <span class="bar-value" id="progressMarksText">0%</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+        <p><strong>Attendance:</strong> <span id="pAtt">0%</span> | <strong>Avg Marks:</strong> <span id="pMarks">0%</span></p>
+      </div>
+    </div>
+  </div>
 
 </div><!-- end main-wrapper -->
 
@@ -730,134 +755,13 @@
 
 <script>
   // ============================================================
-  //  SPLASH SCREEN
+  //  SPLASH SCREEN - FAST (200ms)
   // ============================================================
   window.addEventListener('load', function() {
     setTimeout(function() {
       document.getElementById('splashScreen').classList.add('hidden');
-    }, 800);
+    }, 200);
   });
-
-  // ============================================================
-  //  PWA - INSTALL APP (for mobile)
-  // ============================================================
-  let deferredPrompt;
-
-  window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('installAppBtn').style.display = 'inline-flex';
-  });
-
-  document.getElementById('installAppBtn').addEventListener('click', function() {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(choiceResult) {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
-        }
-        deferredPrompt = null;
-      });
-    } else {
-      alert('📱 To install this app:\n\nOn Android: Tap the menu (⋮) → "Add to Home Screen"\nOn iPhone: Tap Share (⬆) → "Add to Home Screen"\nOn Desktop: Click the install icon in the address bar');
-    }
-  });
-
-  // ============================================================
-  //  DOWNLOAD HTML
-  // ============================================================
-  document.getElementById('downloadHtmlBtn').addEventListener('click', function() {
-    const htmlContent = document.documentElement.outerHTML;
-    const blob = new Blob([
-      '<!DOCTYPE html>\n' + htmlContent
-    ], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'UCC_Portal.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
-
-  // ============================================================
-  //  PWA MANIFEST (auto-generated)
-  // ============================================================
-  (function generateManifest() {
-    const manifest = {
-      name: 'UCC - Universe Coaching Centre',
-      short_name: 'UCC',
-      description: 'Universe Coaching Centre - 9th to 12th & Govt Exam Prep',
-      start_url: '.',
-      display: 'standalone',
-      background_color: '#f4f7fc',
-      theme_color: '#2563eb',
-      orientation: 'portrait-primary',
-      icons: [
-        {
-          src: 'data:image/svg+xml,' + encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">' +
-            '<rect width="512" height="512" rx="80" fill="#2563eb"/>' +
-            '<text x="256" y="340" font-family="Arial, sans-serif" font-size="220" font-weight="900" fill="white" text-anchor="middle">UCC</text>' +
-            '</svg>'
-          ),
-          sizes: '512x512',
-          type: 'image/svg+xml',
-          purpose: 'any maskable'
-        }
-      ]
-    };
-
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    // If manifest link exists, update it
-    const link = document.querySelector('link[rel="manifest"]');
-    if (link) link.href = url;
-  })();
-
-  // ============================================================
-  //  SERVICE WORKER - Offline support
-  // ============================================================
-  (function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        self.addEventListener('install', function(e) {
-          e.waitUntil(
-            caches.open('ucc-cache-v1').then(function(cache) {
-              return cache.addAll([
-                '.',
-                'logo.png'
-              ]).catch(function() {});
-            })
-          );
-        });
-
-        self.addEventListener('fetch', function(e) {
-          e.respondWith(
-            caches.match(e.request).then(function(response) {
-              return response || fetch(e.request);
-            }).catch(function() {
-              return new Response('Offline', { status: 503 });
-            })
-          );
-        });
-      `;
-
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-
-      navigator.serviceWorker.register(swUrl, { scope: '.' })
-        .then(function(reg) {
-          console.log('Service Worker registered successfully');
-        })
-        .catch(function(err) {
-          console.log('Service Worker registration failed:', err);
-        });
-    }
-  })();
 
   // ============================================================
   //  GLOBAL FUNCTIONS
@@ -875,6 +779,18 @@
     } else {
       document.getElementById('loginOverlay').classList.remove('hidden');
     }
+  }
+
+  // ============================================================
+  //  CONTACT NUMBER MANAGEMENT
+  // ============================================================
+  function getContactNumber() {
+    return localStorage.getItem('ucc_contact_number') || '+91 98765 43210';
+  }
+
+  function setContactNumber(num) {
+    localStorage.setItem('ucc_contact_number', num);
+    document.getElementById('contactNumberDisplay').textContent = num;
   }
 
   // ============================================================
@@ -921,8 +837,7 @@
       marks: [],
       doubts: [],
       sessions: { student: [], admin: [] },
-      settings: { theme: 'light' },
-      liveLink: 'https://www.youtube.com/embed/dQw4w9WgXcQ' // default demo
+      settings: { theme: 'light' }
     };
     localStorage.setItem('ucc_data_v3', JSON.stringify(init));
     return init;
@@ -1048,6 +963,12 @@
     const isAdmin = (currentRole === 'admin');
     adminElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
     adminInlineElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
+    // Show/hide edit contact button
+    const editBtn = document.getElementById('editContactBtn');
+    if (editBtn) {
+      if (isAdmin) editBtn.classList.add('visible');
+      else editBtn.classList.remove('visible');
+    }
   }
 
   function updateStudentAvatar(roll) {
@@ -1108,11 +1029,12 @@
       localStorage.removeItem('ucc_student_roll');
       localStorage.removeItem('ucc_student_class');
       localStorage.removeItem('ucc_student_dob');
-      studentDashboard.style.display = 'block';
-      updateStudentDashboard(extra.roll || username);
+      studentDashboard.style.display = 'none';
       updateAdminAvatar(username);
       headerAvatar.style.display = 'flex';
     }
+    // Update contact number display
+    document.getElementById('contactNumberDisplay').textContent = getContactNumber();
     overlay.classList.add('hidden');
     mainWrapper.classList.add('visible');
     document.getElementById('errorPage').classList.remove('visible');
@@ -1124,7 +1046,6 @@
     if (role === 'admin') refreshDashboard();
     updateNotificationBadge();
     updateStudentCount();
-    updateLiveLinkDisplay();
   }
 
   function logout() {
@@ -1157,14 +1078,7 @@
   function updateStudentDashboard(roll) {
     data = getData();
     const s = data.students[roll];
-    if (!s) {
-      if (currentRole === 'admin') {
-        document.getElementById('studentName').textContent = `Admin: ${currentUser}`;
-        document.getElementById('studentClassInfo').textContent = 'Admin Panel';
-        return;
-      }
-      return;
-    }
+    if (!s) return;
     const name = s.name || roll;
     document.getElementById('studentName').textContent = `Student: ${name} (${roll})`;
     document.getElementById('studentClassInfo').textContent = `Class: ${s.class || 'N/A'} | Roll: ${roll}`;
@@ -1183,36 +1097,6 @@
     }
     document.getElementById('quizCount').textContent = marks.length || 0;
   }
-
-  // ============================================================
-  //  LIVE LINK FUNCTIONS
-  // ============================================================
-  function updateLiveLinkDisplay() {
-    data = getData();
-    const link = data.liveLink || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-    document.getElementById('currentLiveLink').textContent = link;
-  }
-
-  document.getElementById('saveLiveLinkBtn').addEventListener('click', function() {
-    const link = document.getElementById('liveLinkInput').value.trim();
-    if (!link) {
-      document.getElementById('liveLinkStatus').innerHTML = '❌ Please enter a valid URL.';
-      document.getElementById('liveLinkStatus').style.color = '#dc2626';
-      return;
-    }
-    if (!link.startsWith('http')) {
-      document.getElementById('liveLinkStatus').innerHTML = '❌ Please enter a valid URL starting with http:// or https://';
-      document.getElementById('liveLinkStatus').style.color = '#dc2626';
-      return;
-    }
-    data = getData();
-    data.liveLink = link;
-    saveData(data);
-    document.getElementById('liveLinkStatus').innerHTML = '✅ Live link updated successfully!';
-    document.getElementById('liveLinkStatus').style.color = '#16a34a';
-    document.getElementById('liveLinkInput').value = '';
-    updateLiveLinkDisplay();
-  });
 
   // ============================================================
   //  PROFILE PICTURE UPLOAD
@@ -1246,17 +1130,11 @@
   }
 
   document.getElementById('studentAvatar').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') {
-      studentAvatarInput.click();
-    }
+    if (currentRole === 'student') studentAvatarInput.click();
   });
   studentAvatarInput.addEventListener('change', function(e) {
     if (this.files && this.files[0]) {
-      if (currentRole === 'student') {
-        handleProfilePicUpload(this.files[0], 'student', currentUser);
-      } else if (currentRole === 'admin') {
-        alert('Admin profile picture can be changed via "Change Profile Picture" button in Admin Settings.');
-      }
+      handleProfilePicUpload(this.files[0], 'student', currentUser);
       this.value = '';
     }
   });
@@ -1272,6 +1150,22 @@
   });
   changeProfilePicBtn.addEventListener('click', function() {
     if (currentRole === 'admin') adminAvatarInput.click();
+  });
+
+  // ============================================================
+  //  CONTACT NUMBER - EDIT (ADMIN ONLY)
+  // ============================================================
+  document.getElementById('editContactBtn').addEventListener('click', function() {
+    if (currentRole !== 'admin') {
+      alert('Only admin can edit contact number.');
+      return;
+    }
+    const current = getContactNumber();
+    const newNum = prompt('Enter new contact number:', current);
+    if (newNum !== null && newNum.trim() !== '') {
+      setContactNumber(newNum.trim());
+      alert('✅ Contact number updated successfully!');
+    }
   });
 
   // ============================================================
@@ -1295,12 +1189,11 @@
   function updateNotificationBadge() {
     data = getData();
     let unread = 0;
-    if (currentRole === 'student' || currentRole === 'admin') {
+    if (currentRole === 'student') {
       const notices = data.notices.filter(n => n.class === 'all' || n.class === currentClass);
       unread = notices.length;
-      if (currentRole === 'admin') {
-        unread += data.doubts.filter(d => d.status === 'pending').length;
-      }
+    } else if (currentRole === 'admin') {
+      unread = data.doubts.filter(d => d.status === 'pending').length;
     }
     if (unread > 0) {
       notifBadge.style.display = 'inline';
@@ -1311,21 +1204,21 @@
   }
 
   document.getElementById('notificationIcon').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') {
+    if (currentRole === 'student') {
       data = getData();
       const notices = data.notices.filter(n => n.class === 'all' || n.class === currentClass);
-      if (notices.length === 0 && currentRole === 'student') {
-        alert('📭 No new notifications.');
-      } else {
+      if (notices.length === 0) alert('📭 No new notifications.');
+      else {
         let msg = '📢 Notices:\n\n';
         notices.forEach(n => msg += `📌 ${n.title}\n${n.content}\n📅 ${n.date}\n\n`);
-        if (currentRole === 'admin') {
-          const pending = data.doubts.filter(d => d.status === 'pending');
-          if (pending.length > 0) {
-            msg += '❓ Pending Doubts:\n';
-            pending.forEach(d => msg += `ID: ${d.id} | ${d.roll}\nQ: ${d.question}\n\n`);
-          }
-        }
+        alert(msg);
+      }
+    } else if (currentRole === 'admin') {
+      const pending = data.doubts.filter(d => d.status === 'pending');
+      if (pending.length === 0) alert('✅ No pending doubts.');
+      else {
+        let msg = '❓ Pending Doubts:\n\n';
+        pending.forEach(d => msg += `ID: ${d.id} | ${d.roll}\nQ: ${d.question}\n\n`);
         alert(msg);
       }
     } else {
@@ -1418,7 +1311,6 @@
 
     updateStudentCount();
     updateNotificationBadge();
-    updateLiveLinkDisplay();
   }
 
   // ============================================================
@@ -1587,7 +1479,6 @@
       const target = document.getElementById('tab-' + tab);
       if (target) target.classList.add('active');
       else showErrorPage();
-      if (tab === 'liveSettings') updateLiveLinkDisplay();
     });
   });
 
@@ -1654,7 +1545,7 @@
     }
     addSession(data, 'admin', username, deviceId);
     saveData(data);
-    setRole('admin', { username, roll: username });
+    setRole('admin', { username });
   });
 
   studentRoll.addEventListener('keydown', e => { if (e.key === 'Enter') studentSubmit.click(); });
@@ -1686,7 +1577,7 @@
       data = getData();
       data = cleanExpiredSessions(data);
       if (data.sessions.admin && data.sessions.admin.some(s => s.username === username && s.deviceId === deviceId)) {
-        setRole('admin', { username, roll: username });
+        setRole('admin', { username });
       } else { localStorage.removeItem('ucc_role'); localStorage.removeItem('ucc_admin_session'); showOptions(); }
     } else { showOptions(); }
   } else { showOptions(); }
@@ -1768,7 +1659,7 @@
   });
 
   // ============================================================
-  //  FEATURE INTERACTIONS (Student & Admin both can use)
+  //  FEATURE INTERACTIONS (Student)
   // ============================================================
   function openModal(id) { 
     const el = document.getElementById(id);
@@ -1786,11 +1677,64 @@
     el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
   });
 
-  // Live Modal - uses liveLink from data
+  document.querySelectorAll('.quick-item[data-feature]').forEach(el => {
+    el.addEventListener('click', function() {
+      const f = this.dataset.feature;
+      if (currentRole === 'student') {
+        if (f === 'live') openLiveModal();
+        else if (f === 'recorded') openRecordedModal();
+        else if (f === 'material') openMaterialModal();
+        else if (f === 'quiz') openQuizModal();
+        else if (f === 'analysis') openProgressModal();
+        else if (f === 'report') openReportModal();
+        else showErrorPage();
+      } else if (currentRole === 'admin') { alert('Admin: Use dashboard.'); }
+      else { alert('Please login first.'); }
+    });
+  });
+
+  document.querySelectorAll('[data-action="watch-demo"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student') openRecordedModal(); else alert('Please login as student.'); });
+  });
+  document.querySelectorAll('[data-action="start-quiz"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student') openQuizModal(); else alert('Please login as student.'); });
+  });
+  document.querySelectorAll('[data-action="view-report"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student') openReportModal(); else alert('Please login as student.'); });
+  });
+  document.querySelectorAll('[data-action="view-notices"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student') openNoticesModal(); else alert('Please login as student.'); });
+  });
+  document.querySelector('[data-action="free-demo"]').addEventListener('click', function() {
+    if (currentRole === 'student') openModal('demoModal');
+    else alert('Please login as student.');
+  });
+  document.querySelector('[data-action="manage-attendance"]').addEventListener('click', function() {
+    if (currentRole === 'admin') { 
+      const tabBtn = document.querySelector('.dashboard-tabs button[data-tab="attendance"]');
+      if (tabBtn) tabBtn.click();
+      else showErrorPage();
+    } else if (currentRole === 'student') openAttendanceView();
+    else alert('Please login.');
+  });
+
+  document.getElementById('askDoubtBtn').addEventListener('click', function() {
+    if (currentRole === 'student') { openModal('doubtModal'); loadMyDoubts(); }
+    else alert('Login as student.');
+  });
+  document.getElementById('viewTimetableBtn').addEventListener('click', function() {
+    if (currentRole === 'student') openTimetableView();
+    else alert('Login as student.');
+  });
+  document.getElementById('viewMarksBtn').addEventListener('click', function() {
+    if (currentRole === 'student') openMarksView();
+    else alert('Login as student.');
+  });
+
+  // ============================================================
+  //  MODAL FUNCTIONS
+  // ============================================================
   function openLiveModal() {
-    data = getData();
-    const link = data.liveLink || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-    document.getElementById('liveIframe').src = link;
     const cls = currentClass || '9th';
     document.getElementById('liveTitle').textContent = `🔴 Live Class - ${cls}`;
     openModal('liveModal');
@@ -1895,6 +1839,7 @@
     openModal('noticesModal');
   }
 
+  // ===== PROGRESS MODAL (CSS Chart - FAST) =====
   function openProgressModal() {
     const roll = currentUser;
     data = getData();
@@ -1905,32 +1850,19 @@
     const marks = data.marks.filter(m => m.roll === roll);
     let avgPct = 0;
     if (marks.length > 0) { let tm=0, tt=0; marks.forEach(m => { tm+=m.marks; tt+=m.total; }); avgPct = tt>0 ? Math.round((tm/tt)*100) : 0; }
+    
     document.getElementById('pAtt').textContent = attPct + '%';
     document.getElementById('pMarks').textContent = avgPct + '%';
-    const ctx = document.getElementById('progressChart').getContext('2d');
-    if (window._progressChart) { window._progressChart.destroy(); }
-    window._progressChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Attendance', 'Marks'],
-        datasets: [{
-          label: 'Progress (%)',
-          data: [attPct, avgPct],
-          backgroundColor: ['#2563eb', '#facc15'],
-          borderColor: ['#1d4ed8', '#eab308'],
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { max: 100, beginAtZero: true } }
-      }
-    });
+    document.getElementById('progressAttBar').style.width = attPct + '%';
+    document.getElementById('progressAttText').textContent = attPct + '%';
+    document.getElementById('progressMarksBar').style.width = avgPct + '%';
+    document.getElementById('progressMarksText').textContent = avgPct + '%';
+    
     openModal('progressModal');
   }
 
   document.getElementById('submitDoubtBtn').addEventListener('click', function() {
-    if (currentRole !== 'student' && currentRole !== 'admin') { alert('Please login as student or admin.'); return; }
+    if (currentRole !== 'student') { alert('Please login as student.'); return; }
     const question = document.getElementById('doubtQuestion').value.trim();
     if (!question) { document.getElementById('doubtStatus').innerHTML = '❌ Please type your question.'; return; }
     data = getData();
@@ -1944,7 +1876,7 @@
   });
 
   function loadMyDoubts() {
-    if (currentRole !== 'student' && currentRole !== 'admin') return;
+    if (currentRole !== 'student') return;
     data = getData();
     const myDoubts = data.doubts.filter(d => d.roll === currentUser);
     const container = document.getElementById('myDoubtsList');
@@ -2003,97 +1935,31 @@
       this.classList.add('active');
       const tab = this.dataset.tab;
       if (tab === 'home') { window.scrollTo({top:0, behavior:'smooth'}); }
-      else if (tab === 'live') { if (currentRole === 'student' || currentRole === 'admin') openLiveModal(); else alert('Login as student or admin.'); }
-      else if (tab === 'quiz') { if (currentRole === 'student' || currentRole === 'admin') openQuizModal(); else alert('Login as student or admin.'); }
+      else if (tab === 'live') { if (currentRole === 'student') openLiveModal(); else alert('Login as student.'); }
+      else if (tab === 'quiz') { if (currentRole === 'student') openQuizModal(); else alert('Login as student.'); }
       else if (tab === 'profile') {
-        if (currentRole === 'student' || currentRole === 'admin') {
+        if (currentRole === 'student') {
           document.querySelector('.student-profile').scrollIntoView({behavior:'smooth'});
-        } else { alert('Login as student or admin.'); }
+        } else { alert('Login as student.'); }
       }
     });
-  });
-
-  // ============================================================
-  //  QUICK GRID CLICKS (for both student and admin)
-  // ============================================================
-  document.querySelectorAll('.quick-item[data-feature]').forEach(el => {
-    el.addEventListener('click', function() {
-      const f = this.dataset.feature;
-      if (currentRole === 'student' || currentRole === 'admin') {
-        if (f === 'live') openLiveModal();
-        else if (f === 'recorded') openRecordedModal();
-        else if (f === 'material') openMaterialModal();
-        else if (f === 'quiz') openQuizModal();
-        else if (f === 'analysis') openProgressModal();
-        else if (f === 'report') openReportModal();
-        else showErrorPage();
-      } else {
-        alert('Please login first.');
-      }
-    });
-  });
-
-  document.querySelectorAll('[data-action="watch-demo"]').forEach(el => {
-    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openRecordedModal(); else alert('Please login as student or admin.'); });
-  });
-  document.querySelectorAll('[data-action="start-quiz"]').forEach(el => {
-    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openQuizModal(); else alert('Please login as student or admin.'); });
-  });
-  document.querySelectorAll('[data-action="view-report"]').forEach(el => {
-    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openReportModal(); else alert('Please login as student or admin.'); });
-  });
-  document.querySelectorAll('[data-action="view-notices"]').forEach(el => {
-    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openNoticesModal(); else alert('Please login as student or admin.'); });
-  });
-  document.querySelector('[data-action="free-demo"]').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') openModal('demoModal');
-    else alert('Please login as student or admin.');
-  });
-  document.querySelector('[data-action="manage-attendance"]').addEventListener('click', function() {
-    if (currentRole === 'admin') { 
-      const tabBtn = document.querySelector('.dashboard-tabs button[data-tab="attendance"]');
-      if (tabBtn) tabBtn.click();
-      else showErrorPage();
-    } else if (currentRole === 'student') {
-      openAttendanceView();
-    } else {
-      alert('Please login.');
-    }
-  });
-
-  document.getElementById('askDoubtBtn').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') { openModal('doubtModal'); loadMyDoubts(); }
-    else alert('Login as student or admin.');
-  });
-  document.getElementById('viewTimetableBtn').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') openTimetableView();
-    else alert('Login as student or admin.');
-  });
-  document.getElementById('viewMarksBtn').addEventListener('click', function() {
-    if (currentRole === 'student' || currentRole === 'admin') openMarksView();
-    else alert('Login as student or admin.');
   });
 
   // ============================================================
   //  INIT
   // ============================================================
+  // Initialize contact number
+  document.getElementById('contactNumberDisplay').textContent = getContactNumber();
+
   if (currentRole === 'admin') refreshDashboard();
   updateStudentCount();
   updateNotificationBadge();
-  if (currentRole === 'student' || currentRole === 'admin') {
+  if (currentRole === 'student') {
     updateStudentDashboard(currentUser);
     updateStudentAvatar(currentUser);
-    updateLiveLinkDisplay();
   }
 
-  window.addEventListener('appinstalled', function() {
-    document.getElementById('installAppBtn').style.display = 'none';
-  });
-
-  console.log('✅ UCC Portal loaded successfully!');
-  console.log('📱 To install: Click "Install App" button');
-  console.log('⬇️ To download: Click "Download HTML" button');
-  console.log('🔴 Admin can set live link from Admin Dashboard → Live Settings');
+  console.log('✅ UCC PATHSHALA loaded successfully! (Fast)');
 </script>
 </body>
 </html>
