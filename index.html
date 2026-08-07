@@ -4,12 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <meta name="theme-color" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>UCC PATHSHALA</title>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://kommodo.ai">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* ===== CSS VARIABLES ===== */
@@ -53,14 +49,18 @@
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
     body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: background 0.3s, color 0.3s; }
 
-    /* ----- SPLASH SCREEN (FAST) ----- */
+    /* ----- SPLASH SCREEN ----- */
     #splashScreen {
       position:fixed; top:0; left:0; width:100%; height:100%; background:#2563eb; z-index:99999;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 0.3s;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 0.4s;
     }
     #splashScreen.hidden { opacity:0; pointer-events:none; }
-    #splashScreen .splash-logo { width:90px; height:90px; border-radius:24px; overflow:hidden; background:white; display:flex; align-items:center; justify-content:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-    #splashScreen .splash-logo img { width:100%; height:100%; object-fit:cover; }
+    #splashScreen .splash-logo { 
+      width:90px; height:90px; border-radius:24px; background:white; 
+      display:flex; align-items:center; justify-content:center; 
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      font-size:36px; font-weight:900; color:#2563eb; letter-spacing:-2px;
+    }
     #splashScreen .splash-title { color:white; margin-top:16px; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px; }
     #splashScreen .splash-sub { color:rgba(255,255,255,0.7); font-size:0.9rem; margin-top:2px; }
 
@@ -73,7 +73,7 @@
     .chart-bar-item .bar-fill { height:100%; border-radius:40px; background:var(--primary); transition:width 0.6s ease; width:0%; }
     .chart-bar-item .bar-value { width:40px; font-size:0.8rem; font-weight:600; color:var(--text); text-align:right; flex-shrink:0; }
 
-    /* ----- ERROR PAGE (404) ----- */
+    /* ----- ERROR PAGE ----- */
     .error-page {
       display:none; flex-direction:column; align-items:center; justify-content:center;
       min-height:50vh; padding:40px; text-align:center; background:var(--card-bg);
@@ -99,12 +99,11 @@
       box-shadow:var(--shadow); text-align:center; color:var(--text);
     }
     .login-box .logo-icon { 
-      width:80px; height:80px; border-radius:24px; overflow:hidden; margin:0 auto 12px;
+      width:80px; height:80px; border-radius:24px; margin:0 auto 12px;
       background:var(--primary); display:flex; align-items:center; justify-content:center;
       box-shadow:0 8px 16px -6px var(--primary);
+      font-size:36px; font-weight:900; color:white; letter-spacing:-2px;
     }
-    .login-box .logo-icon img { width:100%; height:100%; object-fit:cover; display:block; }
-    .login-box .logo-icon .fallback { color:white; font-size:28px; font-weight:800; letter-spacing:-1px; display:none; }
     .login-box h2 { font-size:1.8rem; margin-bottom:6px; }
     .login-box p { color:var(--text-muted); margin-bottom:20px; }
     .login-options { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
@@ -129,9 +128,12 @@
     /* Header */
     .header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:28px; padding-bottom:14px; border-bottom:2px solid var(--border); }
     .logo-area { display:flex; align-items:center; gap:10px; }
-    .logo-icon { width:48px; height:48px; border-radius:18px; overflow:hidden; background:var(--primary); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 12px -6px var(--primary); flex-shrink:0; }
-    .logo-icon img { width:100%; height:100%; object-fit:cover; display:block; }
-    .logo-icon .fallback-logo { color:white; font-size:22px; font-weight:800; letter-spacing:-1px; display:none; }
+    .logo-icon { 
+      width:48px; height:48px; border-radius:18px; overflow:hidden; 
+      background:var(--primary); display:flex; align-items:center; justify-content:center; 
+      box-shadow:0 6px 12px -6px var(--primary); flex-shrink:0;
+      font-size:24px; font-weight:900; color:white; letter-spacing:-1px;
+    }
     .logo-text { font-weight:700; font-size:1.8rem; letter-spacing:-0.5px; background:linear-gradient(135deg,var(--text),var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
     .coaching-name { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 12px; }
     .ucc-badge { background:#1e293b; color:white; font-size:0.7rem; font-weight:700; padding:2px 12px; border-radius:40px; -webkit-text-fill-color:white; }
@@ -347,16 +349,14 @@
 </head>
 <body>
 
-<!-- ============ SPLASH SCREEN (FAST) ============ -->
+<!-- ============ SPLASH SCREEN ============ -->
 <div id="splashScreen">
-  <div class="splash-logo">
-    <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="eager">
-  </div>
+  <div class="splash-logo">UCC</div>
   <div class="splash-title">UCC PATHSHALA</div>
   <div class="splash-sub">9th–12th · Govt Exams</div>
 </div>
 
-<!-- ============ ERROR PAGE (404) ============ -->
+<!-- ============ ERROR PAGE ============ -->
 <div class="error-page" id="errorPage">
   <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
   <h1>404 - Not Found</h1>
@@ -367,10 +367,7 @@
 <!-- ============ LOGIN OVERLAY ============ -->
 <div id="loginOverlay">
   <div class="login-box">
-    <div class="logo-icon" id="loginLogo">
-      <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="eager" onerror="this.style.display='none'; document.getElementById('loginFallback').style.display='block';">
-      <span class="fallback" id="loginFallback">UCC</span>
-    </div>
+    <div class="logo-icon">UCC</div>
     <h2>UCC PATHSHALA</h2>
     <p style="color:var(--text-muted); margin-bottom:6px;">Universe Coaching Centre</p>
     <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">9th–12th · Govt Exams</p>
@@ -408,10 +405,7 @@
   <!-- ===== HEADER ===== -->
   <div class="header">
     <div class="logo-area">
-      <div class="logo-icon" id="headerLogo">
-        <img src="https://kommodo.ai/i/bt1vVVLzDI0lJ9Gvdm7A" alt="UCC PATHSHALA" loading="lazy" onerror="this.style.display='none'; document.getElementById('headerFallback').style.display='block';">
-        <span class="fallback-logo" id="headerFallback">UCC</span>
-      </div>
+      <div class="logo-icon">UCC</div>
       <div class="coaching-name">
         <span class="logo-text">UCC PATHSHALA</span>
         <span class="ucc-badge">UCC</span>
@@ -755,12 +749,12 @@
 
 <script>
   // ============================================================
-  //  SPLASH SCREEN - FAST (200ms)
+  //  SPLASH SCREEN - FAST
   // ============================================================
   window.addEventListener('load', function() {
     setTimeout(function() {
       document.getElementById('splashScreen').classList.add('hidden');
-    }, 200);
+    }, 300);
   });
 
   // ============================================================
@@ -963,7 +957,6 @@
     const isAdmin = (currentRole === 'admin');
     adminElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
     adminInlineElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
-    // Show/hide edit contact button
     const editBtn = document.getElementById('editContactBtn');
     if (editBtn) {
       if (isAdmin) editBtn.classList.add('visible');
@@ -1033,7 +1026,6 @@
       updateAdminAvatar(username);
       headerAvatar.style.display = 'flex';
     }
-    // Update contact number display
     document.getElementById('contactNumberDisplay').textContent = getContactNumber();
     overlay.classList.add('hidden');
     mainWrapper.classList.add('visible');
@@ -1839,7 +1831,6 @@
     openModal('noticesModal');
   }
 
-  // ===== PROGRESS MODAL (CSS Chart - FAST) =====
   function openProgressModal() {
     const roll = currentUser;
     data = getData();
@@ -1948,7 +1939,6 @@
   // ============================================================
   //  INIT
   // ============================================================
-  // Initialize contact number
   document.getElementById('contactNumberDisplay').textContent = getContactNumber();
 
   if (currentRole === 'admin') refreshDashboard();
@@ -1959,7 +1949,7 @@
     updateStudentAvatar(currentUser);
   }
 
-  console.log('✅ UCC PATHSHALA loaded successfully! (Fast)');
+  console.log('✅ UCC PATHSHALA loaded successfully!');
 </script>
 </body>
 </html>
