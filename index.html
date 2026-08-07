@@ -28,6 +28,8 @@
       --error-bg: #fef2f2;
       --error-border: #fecaca;
       --error-text: #991b1b;
+      --success: #16a34a;
+      --danger: #dc2626;
     }
     [data-theme="dark"] {
       --bg: #0f172a;
@@ -44,6 +46,8 @@
       --error-bg: #1e293b;
       --error-border: #7f1d1d;
       --error-text: #fca5a5;
+      --success: #4ade80;
+      --danger: #f87171;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
@@ -59,7 +63,7 @@
     #splashScreen .splash-title { color:white; margin-top:16px; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px; }
     #splashScreen .splash-sub { color:rgba(255,255,255,0.7); font-size:0.9rem; margin-top:2px; }
 
-    /* ===== CSS CHART (No external library) ===== */
+    /* ===== CSS CHART ===== */
     .chart-container { max-width:400px; margin:16px auto; padding:12px; background:var(--secondary); border-radius:16px; }
     .chart-bar-group { display:flex; flex-direction:column; gap:8px; }
     .chart-bar-item { display:flex; align-items:center; gap:10px; }
@@ -209,8 +213,10 @@
     .data-table tr:hover { background:var(--secondary); }
     .delete-btn { background:#dc2626; color:white; border:none; padding:2px 10px; border-radius:40px; cursor:pointer; font-size:0.7rem; }
     .delete-btn:hover { background:#b91c1c; }
+    .edit-btn { background:var(--primary); color:white; border:none; padding:2px 10px; border-radius:40px; cursor:pointer; font-size:0.7rem; margin-right:4px; }
+    .edit-btn:hover { background:var(--primary-hover); }
 
-    .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form {
+    .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-quiz-form {
       margin:16px 0; display:flex; flex-wrap:wrap; gap:10px; align-items:center;
     }
     .add-attendance-form input, .add-attendance-form select,
@@ -218,13 +224,14 @@
     .add-timetable-form input, .add-timetable-form select,
     .add-marks-form input, .add-marks-form select,
     .doubt-reply-form input, .doubt-reply-form select,
-    .add-admission-form input, .add-admission-form select {
+    .add-admission-form input, .add-admission-form select,
+    .add-quiz-form input, .add-quiz-form select {
       padding:8px 14px; border-radius:40px; border:1px solid var(--border); flex:1; min-width:120px; background:var(--input-bg); color:var(--text);
     }
-    .add-attendance-form button, .add-notice-form button, .add-timetable-form button, .add-marks-form button, .doubt-reply-form button, .add-admission-form button {
+    .add-attendance-form button, .add-notice-form button, .add-timetable-form button, .add-marks-form button, .doubt-reply-form button, .add-admission-form button, .add-quiz-form button {
       background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s;
     }
-    .add-attendance-form button:hover, .add-notice-form button:hover, .add-timetable-form button:hover, .add-marks-form button:hover, .doubt-reply-form button:hover, .add-admission-form button:hover {
+    .add-attendance-form button:hover, .add-notice-form button:hover, .add-timetable-form button:hover, .add-marks-form button:hover, .doubt-reply-form button:hover, .add-admission-form button:hover, .add-quiz-form button:hover {
       background:var(--primary-hover);
     }
 
@@ -278,12 +285,46 @@
     .modal-content .video-list li .play-btn:hover { background:var(--primary-hover); }
     .modal-content .search-input { width:100%; padding:10px 16px; border-radius:40px; border:1px solid var(--border); margin-bottom:12px; background:var(--input-bg); color:var(--text); }
 
-    .quiz-question { margin:16px 0; padding:12px; background:var(--secondary); border-radius:16px; }
-    .quiz-options { display:flex; flex-direction:column; gap:8px; }
-    .quiz-options button { padding:10px; border-radius:40px; border:1px solid var(--border); background:var(--card-bg); cursor:pointer; transition:0.2s; text-align:left; color:var(--text); }
-    .quiz-options button:hover { background:var(--badge-bg); border-color:var(--primary); }
-    .quiz-options button.correct { background:#dcfce7; border-color:#16a34a; color:#166534; }
-    .quiz-options button.wrong { background:#fee2e2; border-color:#dc2626; color:#991b1b; }
+    /* ===== QUIZ STYLES ===== */
+    .quiz-question-container {
+      margin:16px 0; padding:16px; background:var(--secondary); border-radius:16px;
+      border-left:4px solid var(--primary);
+    }
+    .quiz-question-container .q-text { font-weight:600; margin-bottom:8px; }
+    .quiz-question-container .q-options { display:flex; flex-direction:column; gap:6px; }
+    .quiz-question-container .q-options label { display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:40px; cursor:pointer; transition:0.2s; border:1px solid var(--border); background:var(--card-bg); }
+    .quiz-question-container .q-options label:hover { background:var(--badge-bg); border-color:var(--primary); }
+    .quiz-question-container .q-options input[type="radio"] { width:18px; height:18px; accent-color:var(--primary); }
+    .quiz-result-correct { border-left-color:var(--success) !important; background:var(--success); color:white; }
+    .quiz-result-wrong { border-left-color:var(--danger) !important; background:var(--danger); color:white; }
+    .quiz-result-neutral { border-left-color:var(--text-muted) !important; }
+    .quiz-result-summary { padding:16px; background:var(--secondary); border-radius:16px; text-align:center; margin-bottom:16px; }
+    .quiz-result-summary .score { font-size:2rem; font-weight:700; color:var(--primary); }
+    .quiz-result-summary .score-detail { display:flex; justify-content:center; gap:30px; margin-top:8px; flex-wrap:wrap; }
+    .quiz-result-summary .score-detail span { font-size:1.1rem; }
+    .quiz-result-summary .score-detail .correct { color:var(--success); }
+    .quiz-result-summary .score-detail .wrong { color:var(--danger); }
+    .quiz-submit-btn { background:var(--primary); color:white; border:none; padding:12px 32px; border-radius:60px; font-size:1rem; font-weight:600; cursor:pointer; transition:0.2s; display:block; margin:16px auto 0; }
+    .quiz-submit-btn:hover { background:var(--primary-hover); transform:scale(0.97); }
+
+    /* Quiz Management (Admin) */
+    .quiz-question-item { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border); }
+    .quiz-question-item .q-preview { flex:1; }
+    .quiz-question-item .q-preview .q-text-preview { font-weight:500; }
+    .quiz-question-item .q-preview .q-options-preview { font-size:0.8rem; color:var(--text-muted); }
+    .quiz-question-item .q-actions { display:flex; gap:6px; flex-shrink:0; }
+
+    /* Edit Quiz Modal */
+    .edit-quiz-form { margin-top:12px; }
+    .edit-quiz-form .form-group { margin-bottom:12px; }
+    .edit-quiz-form .form-group label { display:block; font-weight:500; margin-bottom:4px; }
+    .edit-quiz-form .form-group input, .edit-quiz-form .form-group select { width:100%; padding:8px 14px; border-radius:40px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); }
+    .edit-quiz-form .form-actions { display:flex; gap:10px; margin-top:12px; }
+    .edit-quiz-form .form-actions button { padding:8px 24px; border-radius:40px; border:none; font-weight:600; cursor:pointer; transition:0.2s; }
+    .edit-quiz-form .form-actions .save-edit-btn { background:var(--primary); color:white; }
+    .edit-quiz-form .form-actions .save-edit-btn:hover { background:var(--primary-hover); }
+    .edit-quiz-form .form-actions .cancel-edit-btn { background:var(--border); color:var(--text); }
+    .edit-quiz-form .form-actions .cancel-edit-btn:hover { background:var(--text-muted); color:white; }
 
     .report-card { padding:12px; background:var(--secondary); border-radius:16px; }
     .report-card table { width:100%; border-collapse:collapse; }
@@ -336,13 +377,14 @@
       .security-row { flex-direction:column; align-items:start; }
       .admin-upload-section { padding:18px; }
       .login-box { padding:30px 20px; }
-      .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form { flex-direction:column; align-items:stretch; }
+      .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-quiz-form { flex-direction:column; align-items:stretch; }
       .bottom-nav { display:flex; }
       .student-profile { flex-direction:column; align-items:center; text-align:center; }
       .profile-stats { justify-content:center; }
       .contact-section { flex-direction:column; align-items:center; text-align:center; }
       .live-settings .live-url-input { flex-direction:column; }
       .live-settings .camera-controls { justify-content:center; }
+      .quiz-result-summary .score-detail { gap:15px; }
     }
     @media (max-width:460px) {
       .quick-grid { grid-template-columns:repeat(2,1fr); }
@@ -553,6 +595,7 @@
       <button data-tab="timetable">Timetable</button>
       <button data-tab="marks">Marks</button>
       <button data-tab="doubts">Doubts</button>
+      <button data-tab="quiz">Quiz Management</button>
       <button data-tab="student-features">Student Features</button>
     </div>
 
@@ -649,7 +692,31 @@
       </div>
     </div>
 
-    <!-- ===== STUDENT FEATURES TAB (Admin can use all) ===== -->
+    <!-- ===== QUIZ MANAGEMENT (Admin) ===== -->
+    <div class="tab-content" id="tab-quiz">
+      <h4 style="margin-bottom:8px;">📝 Manage Quiz Questions</h4>
+      <div class="add-quiz-form">
+        <input type="text" id="quizQuestion" placeholder="Question *" style="flex:2;">
+        <input type="text" id="quizOptA" placeholder="Option A *" style="flex:1;">
+        <input type="text" id="quizOptB" placeholder="Option B *" style="flex:1;">
+        <input type="text" id="quizOptC" placeholder="Option C *" style="flex:1;">
+        <input type="text" id="quizOptD" placeholder="Option D *" style="flex:1;">
+        <select id="quizCorrect">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+        <button id="addQuizBtn"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div id="quizStatus" style="margin-bottom:12px; font-weight:500;"></div>
+      <h4>📋 All Questions</h4>
+      <div id="quizListContainer">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ===== STUDENT FEATURES TAB ===== -->
     <div class="tab-content" id="tab-student-features">
       <h4>Student Features (Admin Access)</h4>
       <!-- Live Stream Settings -->
@@ -669,7 +736,7 @@
         <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">Current Live URL: <span id="currentLiveUrlDisplay">None</span></p>
       </div>
 
-      <!-- Replicate Student Modules -->
+      <!-- Student Modules -->
       <div style="margin-top:20px;">
         <div class="quick-grid" style="margin-bottom:16px;">
           <div class="quick-item" data-feature="live"><i class="fas fa-video"></i> Live</div>
@@ -680,11 +747,10 @@
           <div class="quick-item" data-feature="report"><i class="fas fa-id-card"></i> Report Card</div>
         </div>
         <div class="module-grid" id="adminStudentModules">
-          <!-- Same cards as student view, but with data-feature and actions -->
           <div class="module-card" data-feature="live">
             <div class="card-header"><i class="fas fa-chalkboard"></i><h3>Live & Recorded</h3></div>
             <div class="card-body">
-              <ul><li><i class="fas fa-circle"></i> Daily live classes (9-12)</li><li><i class="fas fa-circle"></i> Recorded lectures: Math, Sci, Bio, Physics</li><li><i class="fas fa-circle"></i> Small gov exam prep</li></ul>
+              <ul><li><i class="fas fa-circle"></i> Daily live classes (9-12)</li><li><i class="fas fa-circle"></i> Recorded lectures: Math, Sci, Bio, Physics</li></ul>
               <span class="tag"><i class="far fa-clock"></i> 24/7 access</span>
               <div class="btn-soft" data-action="watch-demo"><i class="fas fa-play"></i> Watch demo</div>
             </div>
@@ -692,7 +758,7 @@
           <div class="module-card" data-feature="quiz">
             <div class="card-header"><i class="fas fa-layer-group"></i><h3>Material & Quizzes</h3></div>
             <div class="card-body">
-              <ul><li><i class="fas fa-circle"></i> Chapter-wise PDFs</li><li><i class="fas fa-circle"></i> Online quizzes & flashcards</li><li><i class="fas fa-circle"></i> Weekly test series</li></ul>
+              <ul><li><i class="fas fa-circle"></i> Chapter-wise PDFs</li><li><i class="fas fa-circle"></i> Online quizzes & flashcards</li></ul>
               <span class="tag"><i class="fas fa-check-circle"></i> 200+ quizzes</span>
               <div class="btn-soft" data-action="start-quiz"><i class="fas fa-pen-fancy"></i> Start quiz</div>
             </div>
@@ -700,7 +766,7 @@
           <div class="module-card" data-feature="analysis">
             <div class="card-header"><i class="fas fa-chart-line"></i><h3>Tests & Analysis</h3></div>
             <div class="card-body">
-              <ul><li><i class="fas fa-circle"></i> Subject-wise tests</li><li><i class="fas fa-circle"></i> Detailed performents analysis</li><li><i class="fas fa-circle"></i> Progress report cards</li></ul>
+              <ul><li><i class="fas fa-circle"></i> Subject-wise tests</li><li><i class="fas fa-circle"></i> Detailed performents analysis</li></ul>
               <span class="tag"><i class="fas fa-flag"></i> Rank predictor</span>
               <div class="btn-soft" data-action="view-report"><i class="fas fa-file-alt"></i> View report</div>
             </div>
@@ -708,7 +774,7 @@
           <div class="module-card" data-feature="notify">
             <div class="card-header"><i class="fas fa-bell"></i><h3>Notify & Privacy</h3></div>
             <div class="card-body">
-              <ul><li><i class="fas fa-circle"></i> Push notifications (alerts, results)</li><li><i class="fas fa-circle"></i> Data security & encryption</li><li><i class="fas fa-circle"></i> Privacy control (role based)</li></ul>
+              <ul><li><i class="fas fa-circle"></i> Push notifications</li><li><i class="fas fa-circle"></i> Data security & encryption</li></ul>
               <span class="tag"><i class="fas fa-lock"></i> ISO 27001</span>
               <div class="btn-soft" data-action="view-notices"><i class="fas fa-bullhorn"></i> View Notices</div>
             </div>
@@ -776,7 +842,62 @@
   <div class="modal-overlay" id="liveModal"><div class="modal-content"><span class="close-modal" data-close="liveModal">&times;</span><h3><i class="fas fa-video" style="color:var(--primary);"></i> Live Class</h3><div class="video-title" id="liveTitle">Loading...</div><div class="video-wrapper" id="liveVideoWrapper"><iframe id="liveIframe" src="" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🔴 Live streaming now</p></div></div>
   <div class="modal-overlay" id="recordedModal"><div class="modal-content"><span class="close-modal" data-close="recordedModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Recorded Lectures</h3><input class="search-input" id="videoSearch" placeholder="Search videos by subject or topic..."><div id="recordedList" class="video-list"></div></div></div>
   <div class="modal-overlay" id="materialModal"><div class="modal-content"><span class="close-modal" data-close="materialModal">&times;</span><h3><i class="fas fa-book-open" style="color:var(--primary);"></i> Study Material</h3><p id="materialContent">Loading...</p></div></div>
-  <div class="modal-overlay" id="quizModal"><div class="modal-content"><span class="close-modal" data-close="quizModal">&times;</span><h3><i class="fas fa-puzzle-piece" style="color:var(--primary);"></i> Quiz</h3><div id="quizContent"><div class="quiz-question"><p><strong>Q1:</strong> What is the SI unit of force?</p><div class="quiz-options"><button class="quiz-opt" data-correct="false">Newton</button><button class="quiz-opt" data-correct="true">Joule</button><button class="quiz-opt" data-correct="false">Watt</button></div></div><div class="quiz-question"><p><strong>Q2:</strong> Which is a scalar quantity?</p><div class="quiz-options"><button class="quiz-opt" data-correct="true">Speed</button><button class="quiz-opt" data-correct="false">Velocity</button><button class="quiz-opt" data-correct="false">Displacement</button></div></div></div></div></div>
+
+  <!-- ===== QUIZ MODAL (Dynamic) ===== -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal-content" id="quizModalContent">
+      <span class="close-modal" data-close="quizModal">&times;</span>
+      <h3><i class="fas fa-puzzle-piece" style="color:var(--primary);"></i> Quiz</h3>
+      <div id="quizContainer">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDIT QUIZ QUESTION MODAL ===== -->
+  <div class="modal-overlay" id="editQuizModal">
+    <div class="modal-content">
+      <span class="close-modal" data-close="editQuizModal">&times;</span>
+      <h3><i class="fas fa-edit" style="color:var(--primary);"></i> Edit Question</h3>
+      <div class="edit-quiz-form" id="editQuizForm">
+        <div class="form-group">
+          <label>Question</label>
+          <input type="text" id="editQText" required>
+        </div>
+        <div class="form-group">
+          <label>Option A</label>
+          <input type="text" id="editQOptA" required>
+        </div>
+        <div class="form-group">
+          <label>Option B</label>
+          <input type="text" id="editQOptB" required>
+        </div>
+        <div class="form-group">
+          <label>Option C</label>
+          <input type="text" id="editQOptC" required>
+        </div>
+        <div class="form-group">
+          <label>Option D</label>
+          <input type="text" id="editQOptD" required>
+        </div>
+        <div class="form-group">
+          <label>Correct Answer</label>
+          <select id="editQCorrect">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="save-edit-btn" id="saveEditQuizBtn"><i class="fas fa-save"></i> Save</button>
+          <button class="cancel-edit-btn" data-close="editQuizModal">Cancel</button>
+        </div>
+        <div id="editQuizStatus" style="margin-top:10px; font-weight:500;"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="reportModal"><div class="modal-content"><span class="close-modal" data-close="reportModal">&times;</span><h3><i class="fas fa-id-card" style="color:var(--primary);"></i> Report Card</h3><div class="report-card" id="reportContent"></div></div></div>
   <div class="modal-overlay" id="attendanceModal"><div class="modal-content"><span class="close-modal" data-close="attendanceModal">&times;</span><h3><i class="fas fa-clipboard-list" style="color:var(--primary);"></i> My Attendance</h3><div id="attendanceViewContent" class="attendance-summary"></div></div></div>
   <div class="modal-overlay" id="demoModal"><div class="modal-content"><span class="close-modal" data-close="demoModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Free Demo Class</h3><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🎓 Sample demo lecture</p></div></div>
@@ -785,7 +906,7 @@
   <div class="modal-overlay" id="marksModal"><div class="modal-content"><span class="close-modal" data-close="marksModal">&times;</span><h3><i class="fas fa-chart-bar" style="color:var(--primary);"></i> My Marks</h3><div id="marksView"></div></div></div>
   <div class="modal-overlay" id="doubtModal"><div class="modal-content"><span class="close-modal" data-close="doubtModal">&times;</span><h3><i class="fas fa-question-circle" style="color:var(--primary);"></i> Ask a Doubt</h3><div class="payment-form"><textarea id="doubtQuestion" placeholder="Type your question here..." style="width:100%; padding:12px; border-radius:20px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); min-height:100px;"></textarea><button class="pay-btn" id="submitDoubtBtn" style="margin-top:10px;"><i class="fas fa-paper-plane"></i> Submit Doubt</button><div id="doubtStatus" style="margin-top:8px;"></div><hr style="margin:16px 0; border-color:var(--border);"><h4>Your Doubts</h4><div id="myDoubtsList"></div></div></div></div>
 
-  <!-- ===== PROGRESS MODAL (CSS Chart) ===== -->
+  <!-- ===== PROGRESS MODAL ===== -->
   <div class="modal-overlay" id="progressModal">
     <div class="modal-content">
       <span class="close-modal" data-close="progressModal">&times;</span>
@@ -952,6 +1073,7 @@
       timetable: [],
       marks: [],
       doubts: [],
+      quiz: [],  // NEW: quiz questions
       sessions: { student: [], admin: [] },
       settings: { theme: 'light' }
     };
@@ -1010,6 +1132,193 @@
     } else {
       if (d.sessions.admin) d.sessions.admin = d.sessions.admin.filter(s => !(s.username === id && s.deviceId === deviceId));
     }
+  }
+
+  // ============================================================
+  //  QUIZ MANAGEMENT (Admin)
+  // ============================================================
+  function renderQuizList() {
+    const data = getData();
+    const container = document.getElementById('quizListContainer');
+    if (!data.quiz || data.quiz.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-muted);">No questions added yet. Add your first question above.</p>';
+      return;
+    }
+    let html = '';
+    data.quiz.forEach((q, idx) => {
+      html += `
+        <div class="quiz-question-item">
+          <div class="q-preview">
+            <div class="q-text-preview">Q${idx+1}: ${q.question}</div>
+            <div class="q-options-preview">
+              A) ${q.options.A} | B) ${q.options.B} | C) ${q.options.C} | D) ${q.options.D}
+              <span style="margin-left:12px; color:var(--success); font-weight:600;">✓ Correct: ${q.correct}</span>
+            </div>
+          </div>
+          <div class="q-actions">
+            <button class="edit-btn" onclick="openEditQuiz(${idx})"><i class="fas fa-pen"></i></button>
+            <button class="delete-btn" onclick="deleteQuizQuestion(${idx})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function deleteQuizQuestion(idx) {
+    if (!confirm('Delete this question?')) return;
+    const data = getData();
+    data.quiz.splice(idx, 1);
+    saveData(data);
+    renderQuizList();
+    document.getElementById('quizStatus').innerHTML = '✅ Question deleted.';
+    document.getElementById('quizStatus').style.color = '#16a34a';
+  }
+
+  let editQuizIndex = -1;
+
+  function openEditQuiz(idx) {
+    const data = getData();
+    const q = data.quiz[idx];
+    if (!q) return;
+    editQuizIndex = idx;
+    document.getElementById('editQText').value = q.question;
+    document.getElementById('editQOptA').value = q.options.A;
+    document.getElementById('editQOptB').value = q.options.B;
+    document.getElementById('editQOptC').value = q.options.C;
+    document.getElementById('editQOptD').value = q.options.D;
+    document.getElementById('editQCorrect').value = q.correct;
+    document.getElementById('editQuizStatus').innerHTML = '';
+    openModal('editQuizModal');
+  }
+
+  document.getElementById('saveEditQuizBtn').addEventListener('click', function() {
+    if (editQuizIndex < 0) return;
+    const question = document.getElementById('editQText').value.trim();
+    const optA = document.getElementById('editQOptA').value.trim();
+    const optB = document.getElementById('editQOptB').value.trim();
+    const optC = document.getElementById('editQOptC').value.trim();
+    const optD = document.getElementById('editQOptD').value.trim();
+    const correct = document.getElementById('editQCorrect').value;
+
+    if (!question || !optA || !optB || !optC || !optD) {
+      document.getElementById('editQuizStatus').innerHTML = '❌ All fields are required.';
+      document.getElementById('editQuizStatus').style.color = '#dc2626';
+      return;
+    }
+
+    const data = getData();
+    data.quiz[editQuizIndex] = {
+      question,
+      options: { A: optA, B: optB, C: optC, D: optD },
+      correct
+    };
+    saveData(data);
+    document.getElementById('editQuizStatus').innerHTML = '✅ Question updated successfully!';
+    document.getElementById('editQuizStatus').style.color = '#16a34a';
+    renderQuizList();
+    setTimeout(() => {
+      closeModal('editQuizModal');
+    }, 800);
+  });
+
+  // ============================================================
+  //  QUIZ - STUDENT VIEW
+  // ============================================================
+  function openQuizModal() {
+    const data = getData();
+    const container = document.getElementById('quizContainer');
+    const questions = data.quiz || [];
+
+    if (questions.length === 0) {
+      container.innerHTML = `
+        <p style="text-align:center; color:var(--text-muted); padding:30px 0;">
+          <i class="fas fa-info-circle" style="font-size:2rem; display:block; margin-bottom:10px;"></i>
+          No questions available. Please check back later.
+        </p>
+      `;
+      openModal('quizModal');
+      return;
+    }
+
+    let html = `<form id="quizForm">`;
+    questions.forEach((q, idx) => {
+      html += `
+        <div class="quiz-question-container" id="qcontainer-${idx}">
+          <div class="q-text">${idx+1}. ${q.question}</div>
+          <div class="q-options">
+            ${['A','B','C','D'].map(opt => `
+              <label>
+                <input type="radio" name="q${idx}" value="${opt}">
+                ${opt}) ${q.options[opt]}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+    html += `
+      <button type="button" class="quiz-submit-btn" id="submitQuizBtn"><i class="fas fa-paper-plane"></i> Submit Quiz</button>
+    </form>
+    <div id="quizResultContainer"></div>
+    `;
+    container.innerHTML = html;
+    openModal('quizModal');
+
+    // Submit handler
+    document.getElementById('submitQuizBtn').addEventListener('click', function() {
+      const form = document.getElementById('quizForm');
+      const resultContainer = document.getElementById('quizResultContainer');
+      const questionContainers = document.querySelectorAll('.quiz-question-container');
+
+      let correct = 0;
+      let total = questions.length;
+      let results = [];
+
+      questions.forEach((q, idx) => {
+        const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+        const isCorrect = selected && selected.value === q.correct;
+        if (isCorrect) correct++;
+        results.push({
+          index: idx,
+          question: q.question,
+          selected: selected ? selected.value : 'Not Answered',
+          correct: q.correct,
+          isCorrect: isCorrect
+        });
+      });
+
+      // Show results
+      let resultHtml = `
+        <div class="quiz-result-summary">
+          <div class="score">${Math.round((correct/total)*100)}%</div>
+          <div class="score-detail">
+            <span>📝 Total: ${total}</span>
+            <span class="correct">✅ Correct: ${correct}</span>
+            <span class="wrong">❌ Wrong: ${total - correct}</span>
+          </div>
+        </div>
+      `;
+
+      results.forEach((r, idx) => {
+        const statusClass = r.isCorrect ? 'quiz-result-correct' : (r.selected ? 'quiz-result-wrong' : 'quiz-result-neutral');
+        const statusIcon = r.isCorrect ? '✅' : (r.selected ? '❌' : '⏭️');
+        resultHtml += `
+          <div class="quiz-question-container ${statusClass}">
+            <div class="q-text">${idx+1}. ${r.question}</div>
+            <div style="font-size:0.9rem; margin-top:4px;">
+              <strong>Your answer:</strong> ${r.selected || 'Not answered'}
+              ${r.selected ? `<span style="margin-left:12px;">${statusIcon}</span>` : ''}
+            </div>
+            ${!r.isCorrect && r.selected ? `<div style="font-size:0.85rem; color:var(--success);">Correct answer: ${r.correct}</div>` : ''}
+          </div>
+        `;
+      });
+
+      // Hide form, show results
+      form.style.display = 'none';
+      resultContainer.innerHTML = resultHtml;
+    });
   }
 
   // ============================================================
@@ -1084,7 +1393,6 @@
       if (isAdmin) editBtn.classList.add('visible');
       else editBtn.classList.remove('visible');
     }
-    // Show/hide camera controls for admin only
     if (isAdmin) {
       document.querySelector('.live-settings').style.display = 'block';
     } else {
@@ -1155,7 +1463,6 @@
       headerAvatar.style.display = 'flex';
     }
     document.getElementById('contactNumberDisplay').textContent = getContactNumber();
-    // Load live URL
     document.getElementById('currentLiveUrlDisplay').textContent = getLiveUrl();
     document.getElementById('liveUrlInput').value = getLiveUrl();
 
@@ -1170,6 +1477,7 @@
     if (role === 'admin') refreshDashboard();
     updateNotificationBadge();
     updateStudentCount();
+    renderQuizList(); // Render quiz list for admin
   }
 
   function logout() {
@@ -1178,10 +1486,7 @@
       removeSession(data, currentRole, currentUser, deviceId);
       saveData(data);
     }
-    // Stop camera if running
-    if (cameraStream) {
-      stopCamera();
-    }
+    if (cameraStream) stopCamera();
     currentRole = null; currentUser = null; currentClass = null;
     localStorage.removeItem('ucc_role'); localStorage.removeItem('ucc_admin_session');
     localStorage.removeItem('ucc_student_roll'); localStorage.removeItem('ucc_student_class'); localStorage.removeItem('ucc_student_dob');
@@ -1313,7 +1618,6 @@
     alert('✅ Live URL updated successfully!');
   });
 
-  // Camera controls
   document.getElementById('startCameraBtn').addEventListener('click', function() {
     if (currentRole !== 'admin') {
       alert('Only admin can use camera.');
@@ -1465,6 +1769,9 @@
       dt.innerHTML += `<tr><td>${d.roll}</td><td>${d.question}</td><td>${d.reply||'—'}</td><td>${status}</td>
         <td><button class="delete-btn" onclick="deleteDoubt(${i})">Delete</button></td></tr>`;
     });
+
+    // Quiz list rendered separately
+    renderQuizList();
 
     updateStudentCount();
     updateNotificationBadge();
@@ -1626,7 +1933,43 @@
     updateNotificationBadge();
   });
 
-  // Tab switching
+  // ============================================================
+  //  QUIZ - ADD (Admin)
+  // ============================================================
+  document.getElementById('addQuizBtn').addEventListener('click', function() {
+    const question = document.getElementById('quizQuestion').value.trim();
+    const optA = document.getElementById('quizOptA').value.trim();
+    const optB = document.getElementById('quizOptB').value.trim();
+    const optC = document.getElementById('quizOptC').value.trim();
+    const optD = document.getElementById('quizOptD').value.trim();
+    const correct = document.getElementById('quizCorrect').value;
+
+    if (!question || !optA || !optB || !optC || !optD) {
+      document.getElementById('quizStatus').innerHTML = '❌ All fields are required.';
+      document.getElementById('quizStatus').style.color = '#dc2626';
+      return;
+    }
+
+    data = getData();
+    data.quiz.push({
+      question,
+      options: { A: optA, B: optB, C: optC, D: optD },
+      correct
+    });
+    saveData(data);
+    document.getElementById('quizStatus').innerHTML = '✅ Question added successfully!';
+    document.getElementById('quizStatus').style.color = '#16a34a';
+    document.getElementById('quizQuestion').value = '';
+    document.getElementById('quizOptA').value = '';
+    document.getElementById('quizOptB').value = '';
+    document.getElementById('quizOptC').value = '';
+    document.getElementById('quizOptD').value = '';
+    renderQuizList();
+  });
+
+  // ============================================================
+  //  TAB SWITCHING
+  // ============================================================
   document.querySelectorAll('.dashboard-tabs button').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.dashboard-tabs button').forEach(b => b.classList.remove('active'));
@@ -1634,8 +1977,10 @@
       const tab = this.dataset.tab;
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       const target = document.getElementById('tab-' + tab);
-      if (target) target.classList.add('active');
-      else showErrorPage();
+      if (target) {
+        target.classList.add('active');
+        if (tab === 'quiz') renderQuizList();
+      } else showErrorPage();
     });
   });
 
@@ -1816,7 +2161,7 @@
   });
 
   // ============================================================
-  //  FEATURE INTERACTIONS (Student & Admin)
+  //  FEATURE INTERACTIONS
   // ============================================================
   function openModal(id) { 
     const el = document.getElementById(id);
@@ -1834,7 +2179,6 @@
     el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
   });
 
-  // Helper to open live modal with the stored URL
   function openLiveModal() {
     const cls = currentClass || '9th';
     const liveUrl = getLiveUrl();
@@ -1844,7 +2188,7 @@
     openModal('liveModal');
   }
 
-  // Attach to quick items and module cards (both student and admin sections)
+  // Quick items
   document.querySelectorAll('.quick-item[data-feature]').forEach(el => {
     el.addEventListener('click', function() {
       const f = this.dataset.feature;
@@ -1856,7 +2200,6 @@
         }
         return;
       }
-      // Other features: same as before
       if (currentRole === 'student' || currentRole === 'admin') {
         if (f === 'recorded') openRecordedModal();
         else if (f === 'material') openMaterialModal();
@@ -1870,7 +2213,7 @@
     });
   });
 
-  // Also attach to module cards in admin student features
+  // Admin student features module buttons
   document.querySelectorAll('#adminStudentModules .module-card .btn-soft[data-action]').forEach(el => {
     el.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -1891,7 +2234,7 @@
     });
   });
 
-  // Also the student view module buttons (they already have listeners from earlier, but we need to override to allow admin)
+  // Student view module buttons
   document.querySelectorAll('.module-grid .btn-soft[data-action]').forEach(el => {
     el.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -1912,8 +2255,6 @@
     });
   });
 
-  // Other feature buttons (Ask Doubt, Timetable, Marks) - already have listeners; they check role
-
   document.getElementById('askDoubtBtn').addEventListener('click', function() {
     if (currentRole === 'student') { openModal('doubtModal'); loadMyDoubts(); }
     else alert('Login as student.');
@@ -1925,6 +2266,22 @@
   document.getElementById('viewMarksBtn').addEventListener('click', function() {
     if (currentRole === 'student') openMarksView();
     else alert('Login as student.');
+  });
+
+  // Demo button
+  document.querySelector('[data-action="free-demo"]').addEventListener('click', function() {
+    if (currentRole === 'student') openModal('demoModal');
+    else alert('Please login as student.');
+  });
+
+  // Attendance manage
+  document.querySelector('[data-action="manage-attendance"]').addEventListener('click', function() {
+    if (currentRole === 'admin') { 
+      const tabBtn = document.querySelector('.dashboard-tabs button[data-tab="attendance"]');
+      if (tabBtn) tabBtn.click();
+      else showErrorPage();
+    } else if (currentRole === 'student') openAttendanceView();
+    else alert('Please login.');
   });
 
   // ============================================================
@@ -1963,21 +2320,6 @@
     const cls = currentClass || '9th';
     document.getElementById('materialContent').textContent = CLASS_MATERIAL[cls] || CLASS_MATERIAL['9th'];
     openModal('materialModal');
-  }
-
-  function openQuizModal() {
-    openModal('quizModal');
-    document.querySelectorAll('.quiz-opt').forEach(btn => {
-      btn.classList.remove('correct', 'wrong');
-      btn.disabled = false;
-      btn.onclick = function(e) {
-        if (this.disabled) return;
-        const isCorrect = this.dataset.correct === 'true';
-        if (isCorrect) { this.classList.add('correct'); alert('✅ Correct!'); }
-        else { this.classList.add('wrong'); alert('❌ Wrong. Try again!'); }
-        this.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
-      };
-    });
   }
 
   function openReportModal() {
@@ -2148,6 +2490,7 @@
     updateStudentDashboard(currentUser);
     updateStudentAvatar(currentUser);
   }
+  renderQuizList();
 
   console.log('✅ UCC PATHSHALA loaded successfully!');
 </script>
