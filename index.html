@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>UCC · Universe Coaching Centre</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --bg: #f4f7fc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #eef2f6;
+      --shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #f8fafc;
+      --badge-bg: #eef4ff;
+      --input-bg: white;
+      --modal-bg: white;
+      --nav-bg: white;
+      --radius: 36px;
+      --card-radius: 28px;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --error-text: #991b1b;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 20px 40px -12px rgba(0,0,0,0.6);
+      --secondary: #1e293b;
+      --badge-bg: #1e293b;
+      --input-bg: #1e293b;
+      --modal-bg: #1e293b;
+      --nav-bg: #0f172a;
+      --error-bg: #1e293b;
+      --error-border: #7f1d1d;
+      --error-text: #fca5a5;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
+    body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: background 0.3s, color 0.3s; }
+
+    /* ----- SPLASH SCREEN ----- */
+    #splashScreen {
+      position:fixed; top:0; left:0; width:100%; height:100%; background:#2563eb; z-index:99999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 0.8s;
+    }
+    #splashScreen.hidden { opacity:0; pointer-events:none; }
+    #splashScreen .splash-logo { width:100px; height:100px; border-radius:28px; background:white; display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:900; color:#2563eb; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+    #splashScreen .splash-title { color:white; margin-top:20px; font-size:1.8rem; font-weight:700; letter-spacing:-0.5px; }
+    #splashScreen .splash-sub { color:rgba(255,255,255,0.7); font-size:1rem; margin-top:4px; }
+
+    /* ----- ERROR PAGE (404) ----- */
+    .error-page {
+      display:none; flex-direction:column; align-items:center; justify-content:center;
+      min-height:50vh; padding:40px; text-align:center; background:var(--card-bg);
+      border-radius:var(--radius); box-shadow:var(--shadow); max-width:500px; width:90%;
+      border:2px solid var(--error-border);
+    }
+    .error-page.visible { display:flex; }
+    .error-page .error-icon { font-size:4rem; color:var(--error-text); margin-bottom:16px; }
+    .error-page h1 { font-size:2.5rem; color:var(--error-text); margin-bottom:8px; }
+    .error-page p { color:var(--text-muted); margin-bottom:20px; }
+    .error-page .btn-home { background:var(--primary); color:white; border:none; padding:10px 28px; border-radius:60px; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:10px; }
+    .error-page .btn-home:hover { background:var(--primary-hover); transform:scale(0.97); }
+
+    /* ----- LOGIN OVERLAY ----- */
+    #loginOverlay {
+      position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6);
+      backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:9999;
+      transition: opacity 0.3s;
+    }
+    #loginOverlay.hidden { opacity:0; pointer-events:none; }
+    .login-box {
+      background:var(--card-bg); padding:40px 30px; border-radius:40px; max-width:420px; width:90%;
+      box-shadow:var(--shadow); text-align:center; color:var(--text);
+    }
+    .login-box .logo-icon { 
+      width:80px; height:80px; border-radius:24px; overflow:hidden; margin:0 auto 12px;
+      background:var(--primary); display:flex; align-items:center; justify-content:center;
+      box-shadow:0 8px 16px -6px var(--primary);
+    }
+    .login-box .logo-icon img { width:100%; height:100%; object-fit:cover; display:block; }
+    .login-box .logo-icon .fallback { color:white; font-size:28px; font-weight:800; letter-spacing:-1px; display:none; }
+    .login-box h2 { font-size:1.8rem; margin-bottom:6px; }
+    .login-box p { color:var(--text-muted); margin-bottom:20px; }
+    .login-options { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .login-options button { padding:12px 28px; border:none; border-radius:60px; font-weight:600; font-size:1rem; cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:10px; }
+    .login-options .student-btn { background:var(--badge-bg); color:var(--text); }
+    .login-options .student-btn:hover { background:var(--border); transform:scale(0.97); }
+    .login-options .admin-btn { background:#0f172a; color:white; }
+    .login-options .admin-btn:hover { background:#1e293b; transform:scale(0.97); }
+    .login-form { margin-top:20px; display:none; }
+    .login-form.active { display:block; }
+    .login-form input, .login-form select { width:100%; padding:12px 16px; border-radius:60px; border:1px solid var(--border); margin-bottom:12px; font-size:1rem; background:var(--input-bg); color:var(--text); }
+    .login-form .login-submit { background:var(--primary); color:white; border:none; padding:12px; border-radius:60px; width:100%; font-weight:600; cursor:pointer; transition:0.2s; }
+    .login-form .login-submit:hover { background:var(--primary-hover); }
+    .login-form .back-link { display:inline-block; margin-top:12px; color:var(--primary); cursor:pointer; font-size:0.9rem; }
+    .login-form .back-link:hover { text-decoration:underline; }
+    .login-error { color:#dc2626; font-size:0.85rem; margin-top:6px; }
+
+    /* ----- MAIN WRAPPER ----- */
+    .main-wrapper { max-width:1300px; width:100%; background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px 22px 32px; border:1px solid var(--border); display:none; transition: background 0.3s, border 0.3s; }
+    .main-wrapper.visible { display:block; }
+
+    /* Header */
+    .header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:28px; padding-bottom:14px; border-bottom:2px solid var(--border); }
+    .logo-area { display:flex; align-items:center; gap:10px; }
+    .logo-icon { width:48px; height:48px; border-radius:18px; overflow:hidden; background:var(--primary); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 12px -6px var(--primary); flex-shrink:0; }
+    .logo-icon img { width:100%; height:100%; object-fit:cover; display:block; }
+    .logo-icon .fallback-logo { color:white; font-size:22px; font-weight:800; letter-spacing:-1px; display:none; }
+    .logo-text { font-weight:700; font-size:1.8rem; letter-spacing:-0.5px; background:linear-gradient(135deg,var(--text),var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .coaching-name { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 12px; }
+    .ucc-badge { background:#1e293b; color:white; font-size:0.7rem; font-weight:700; padding:2px 12px; border-radius:40px; -webkit-text-fill-color:white; }
+    .badge-gov { background:#facc15; color:#1e293b; font-size:0.7rem; font-weight:600; padding:4px 12px; border-radius:40px; margin-left:6px; -webkit-text-fill-color:#1e293b; }
+    .user-profile { display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+    .user-profile .role-badge { background:var(--badge-bg); padding:4px 14px; border-radius:40px; font-size:0.75rem; font-weight:600; color:var(--text); }
+    .user-profile .avatar-small { width:36px; height:36px; border-radius:50%; overflow:hidden; background:var(--primary); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:0.9rem; cursor:pointer; border:2px solid var(--primary); transition:0.2s; }
+    .user-profile .avatar-small:hover { opacity:0.8; transform:scale(0.95); }
+    .user-profile .avatar-small img { width:100%; height:100%; object-fit:cover; }
+    .user-profile .logout-btn { background:#dc2626; color:white; border:none; padding:8px 18px; border-radius:40px; font-weight:600; font-size:0.85rem; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; }
+    .user-profile .logout-btn:hover { background:#b91c1c; transform:scale(0.97); }
+    .theme-toggle { background:var(--border); border:none; padding:8px 12px; border-radius:40px; cursor:pointer; font-size:1rem; color:var(--text); transition:0.2s; }
+    .theme-toggle:hover { background:var(--secondary); }
+    .app-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .app-actions button { background:var(--primary); color:white; border:none; padding:6px 14px; border-radius:40px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; }
+    .app-actions button:hover { background:var(--primary-hover); transform:scale(0.95); }
+
+    /* Quick access */
+    .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:12px; background:var(--secondary); padding:16px 12px; border-radius:40px; margin-bottom:30px; border:1px solid var(--border); }
+    .quick-item { display:flex; flex-direction:column; align-items:center; background:var(--card-bg); padding:10px 4px; border-radius:30px; font-size:0.7rem; font-weight:600; color:var(--text); box-shadow:0 2px 6px rgba(0,0,0,0.02); transition:0.15s; border:1px solid transparent; cursor:pointer; }
+    .quick-item i { font-size:1.6rem; margin-bottom:4px; color:var(--primary); }
+    .quick-item:hover { border-color:var(--primary); background:var(--card-bg); transform:scale(0.97); }
+    .quick-item .badge { background:#dc2626; color:white; font-size:0.6rem; padding:1px 6px; border-radius:40px; margin-top:2px; }
+
+    /* Module Grid */
+    .module-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px; margin-top:8px; margin-bottom:28px; }
+    .module-card { background:var(--card-bg); border-radius:var(--card-radius); padding:20px 18px 22px; box-shadow:0 6px 18px rgba(0,0,0,0.03); border:1px solid var(--border); transition:all 0.2s; display:flex; flex-direction:column; }
+    .module-card:hover { border-color:var(--primary); box-shadow:0 12px 28px -12px var(--primary); }
+    .card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .card-header i { font-size:2rem; color:var(--primary); width:44px; height:44px; background:var(--badge-bg); display:flex; align-items:center; justify-content:center; border-radius:18px; }
+    .card-header h3 { font-weight:600; font-size:1.2rem; color:var(--text); }
+    .card-body { font-size:0.9rem; color:var(--text); line-height:1.6; flex:1; }
+    .card-body ul { list-style:none; margin-top:6px; }
+    .card-body ul li { padding:4px 0; display:flex; align-items:center; gap:8px; border-bottom:1px dashed var(--border); }
+    .card-body ul li i { color:var(--primary); font-size:0.75rem; width:18px; }
+    .tag { background:var(--badge-bg); color:var(--text); font-size:0.65rem; font-weight:600; padding:2px 12px; border-radius:40px; display:inline-block; margin-top:8px; }
+    .btn-soft { background:transparent; border:1px solid var(--border); padding:8px 12px; border-radius:40px; font-weight:500; font-size:0.75rem; color:var(--text); margin-top:16px; display:inline-flex; align-items:center; gap:8px; transition:0.2s; cursor:pointer; width:fit-content; }
+    .btn-soft i { font-size:0.8rem; }
+    .btn-soft:hover { background:var(--secondary); border-color:var(--text-muted); }
+
+    .demo-stats { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:var(--badge-bg); padding:16px 22px; border-radius:50px; margin:20px 0 26px; border:1px solid var(--border); }
+    .demo-btn { background:var(--primary); color:white; border:none; padding:10px 28px; border-radius:60px; font-weight:600; display:inline-flex; align-items:center; gap:12px; font-size:0.95rem; box-shadow:0 6px 14px var(--primary); transition:0.2s; cursor:pointer; }
+    .demo-btn:hover { background:var(--primary-hover); transform:scale(0.98); }
+    .stats-badge { display:flex; gap:24px; flex-wrap:wrap; }
+    .stats-badge span { background:var(--card-bg); padding:6px 18px; border-radius:60px; font-weight:500; font-size:0.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; align-items:center; gap:6px; color:var(--text); }
+    .stats-badge i { color:var(--primary); }
+
+    .security-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; border-top:2px solid var(--border); padding-top:22px; margin-top:12px; gap:16px; font-size:0.8rem; color:var(--text-muted); }
+    .security-badge { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .security-badge i { color:#16a34a; margin-right:4px; }
+    .privacy-tag { background:var(--secondary); padding:4px 18px; border-radius:60px; font-weight:500; }
+    .attendance-track { display:flex; align-items:center; gap:6px; background:var(--secondary); padding:4px 16px 4px 12px; border-radius:40px; }
+    .push-mock { background:#0f172a; color:white; padding:8px 16px 8px 18px; border-radius:60px; display:inline-flex; align-items:center; gap:12px; font-size:0.75rem; }
+    .push-mock i { color:#facc15; }
+
+    /* Admin-only elements */
+    .admin-only { display: none; }
+    .admin-only.visible { display: block; }
+    .admin-only-inline { display: none; }
+    .admin-only-inline.visible { display: inline-flex; }
+
+    /* Admin Upload */
+    .admin-upload-section { background:var(--secondary); border-radius:32px; padding:24px 22px; margin:28px 0 16px; border:2px dashed var(--primary); transition:0.2s; }
+    .admin-upload-section .admin-header { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .admin-upload-section .admin-header i { font-size:2rem; color:var(--text); background:var(--card-bg); padding:12px; border-radius:60px; box-shadow:0 4px 8px rgba(0,0,0,0.02); }
+    .admin-upload-section .admin-header h2 { font-size:1.5rem; font-weight:600; color:var(--text); }
+    .admin-upload-section .admin-header .lock-badge { background:#1e293b; color:white; padding:2px 14px; border-radius:40px; font-size:0.7rem; font-weight:600; }
+    .upload-form { margin-top:20px; background:var(--card-bg); padding:22px; border-radius:28px; box-shadow:0 4px 12px rgba(0,0,0,0.03); }
+    .upload-form .form-group { margin-bottom:16px; }
+    .upload-form label { font-weight:500; display:block; margin-bottom:4px; color:var(--text); }
+    .upload-form input, .upload-form select { width:100%; padding:10px 14px; border-radius:40px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); font-size:0.9rem; }
+    .upload-form .upload-btn { background:var(--primary); color:white; border:none; padding:10px 28px; border-radius:60px; font-weight:600; font-size:0.95rem; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:10px; }
+    .upload-form .upload-btn:hover { background:var(--primary-hover); transform:scale(0.97); }
+    .upload-status { margin-top:14px; padding:10px 16px; border-radius:40px; display:none; }
+    .upload-status.success { display:block; background:#dcfce7; color:#166534; }
+    .upload-status.error { display:block; background:#fee2e2; color:#991b1b; }
+
+    /* Admin Dashboard */
+    .admin-dashboard { margin-top:20px; padding:20px; background:var(--secondary); border-radius:28px; border:1px solid var(--border); }
+    .admin-dashboard h3 { margin-bottom:16px; display:flex; align-items:center; gap:10px; color:var(--text); }
+    .dashboard-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .dashboard-tabs button { padding:8px 20px; border:none; border-radius:40px; background:var(--border); color:var(--text); font-weight:600; cursor:pointer; transition:0.2s; }
+    .dashboard-tabs button.active { background:var(--primary); color:white; }
+    .dashboard-tabs button:hover { background:var(--text-muted); color:white; }
+    .dashboard-tabs button.active:hover { background:var(--primary-hover); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .data-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .data-table th, .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; color:var(--text); }
+    .data-table th { background:var(--badge-bg); font-weight:600; }
+    .data-table tr:hover { background:var(--secondary); }
+    .delete-btn { background:#dc2626; color:white; border:none; padding:2px 10px; border-radius:40px; cursor:pointer; font-size:0.7rem; }
+    .delete-btn:hover { background:#b91c1c; }
+
+    .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-live-form {
+      margin:16px 0; display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    }
+    .add-attendance-form input, .add-attendance-form select,
+    .add-notice-form input, .add-notice-form select,
+    .add-timetable-form input, .add-timetable-form select,
+    .add-marks-form input, .add-marks-form select,
+    .doubt-reply-form input, .doubt-reply-form select,
+    .add-admission-form input, .add-admission-form select,
+    .add-live-form input, .add-live-form select {
+      padding:8px 14px; border-radius:40px; border:1px solid var(--border); flex:1; min-width:120px; background:var(--input-bg); color:var(--text);
+    }
+    .add-attendance-form button, .add-notice-form button, .add-timetable-form button, .add-marks-form button, .doubt-reply-form button, .add-admission-form button, .add-live-form button {
+      background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s;
+    }
+    .add-attendance-form button:hover, .add-notice-form button:hover, .add-timetable-form button:hover, .add-marks-form button:hover, .doubt-reply-form button:hover, .add-admission-form button:hover, .add-live-form button:hover {
+      background:var(--primary-hover);
+    }
+
+    .admin-settings { margin-top:20px; padding-top:18px; border-top:2px dashed var(--border); display:flex; flex-wrap:wrap; gap:10px; }
+    .admin-settings .btn-soft { margin-top:0; }
+    .change-form { display:none; margin-top:12px; padding:16px; background:var(--secondary); border-radius:20px; }
+    .change-form.active { display:block; }
+    .change-form input { width:100%; padding:10px 14px; border-radius:40px; border:1px solid var(--border); margin-bottom:10px; background:var(--input-bg); color:var(--text); font-size:0.9rem; }
+    .change-form .save-btn { background:var(--primary); color:white; border:none; padding:8px 24px; border-radius:60px; font-weight:600; cursor:pointer; transition:0.2s; margin-right:10px; }
+    .change-form .save-btn:hover { background:var(--primary-hover); }
+    .change-status { font-size:0.8rem; margin-left:8px; }
+
+    /* ===== MODALS ===== */
+    .modal-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:10000;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal-content {
+      background:var(--modal-bg); padding:30px; border-radius:32px; max-width:720px; width:90%; max-height:80vh; overflow-y:auto;
+      box-shadow:var(--shadow); position:relative; color:var(--text);
+    }
+    .modal-content .close-modal {
+      position:absolute; top:12px; right:18px; font-size:1.8rem; cursor:pointer; color:var(--text-muted); transition:0.2s;
+    }
+    .modal-content .close-modal:hover { color:var(--text); transform:rotate(90deg); }
+    .modal-content h3 { margin-bottom:12px; color:var(--text); display:flex; align-items:center; gap:10px; }
+    .modal-content .video-wrapper { position:relative; padding-bottom:56.25%; height:0; border-radius:16px; overflow:hidden; background:#000; margin-top:12px; }
+    .modal-content .video-wrapper iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+    .modal-content .video-title { font-weight:600; font-size:1.1rem; margin:10px 0; color:var(--text); }
+    .modal-content .video-list { list-style:none; }
+    .modal-content .video-list li { padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .modal-content .video-list li .play-btn { background:var(--primary); color:white; border:none; padding:4px 16px; border-radius:40px; cursor:pointer; transition:0.2s; }
+    .modal-content .video-list li .play-btn:hover { background:var(--primary-hover); }
+    .modal-content .search-input { width:100%; padding:10px 16px; border-radius:40px; border:1px solid var(--border); margin-bottom:12px; background:var(--input-bg); color:var(--text); }
+
+    .quiz-question { margin:16px 0; padding:12px; background:var(--secondary); border-radius:16px; }
+    .quiz-options { display:flex; flex-direction:column; gap:8px; }
+    .quiz-options button { padding:10px; border-radius:40px; border:1px solid var(--border); background:var(--card-bg); cursor:pointer; transition:0.2s; text-align:left; color:var(--text); }
+    .quiz-options button:hover { background:var(--badge-bg); border-color:var(--primary); }
+    .quiz-options button.correct { background:#dcfce7; border-color:#16a34a; color:#166534; }
+    .quiz-options button.wrong { background:#fee2e2; border-color:#dc2626; color:#991b1b; }
+
+    .report-card { padding:12px; background:var(--secondary); border-radius:16px; }
+    .report-card table { width:100%; border-collapse:collapse; }
+    .report-card td { padding:8px; border-bottom:1px solid var(--border); }
+
+    .attendance-summary { padding:12px; background:var(--secondary); border-radius:16px; }
+    .attendance-summary .att-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
+
+    /* Student Profile */
+    .student-profile { display:flex; flex-wrap:wrap; gap:20px; padding:16px; background:var(--secondary); border-radius:20px; margin-bottom:16px; align-items:center; }
+    .student-profile .avatar { width:70px; height:70px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; overflow:hidden; border:3px solid var(--primary); transition:0.2s; flex-shrink:0; }
+    .student-profile .avatar:hover { opacity:0.8; transform:scale(0.95); }
+    .student-profile .avatar img { width:100%; height:100%; object-fit:cover; }
+    .student-profile .info { flex:1; }
+    .student-profile .info h3 { font-size:1.3rem; }
+    .student-profile .info p { color:var(--text-muted); font-size:0.9rem; }
+    .profile-stats { display:flex; gap:20px; flex-wrap:wrap; margin-top:8px; }
+    .profile-stats span { background:var(--card-bg); padding:4px 16px; border-radius:40px; font-size:0.8rem; border:1px solid var(--border); }
+
+    .chart-container { max-width:400px; margin:16px auto; }
+
+    /* Bottom Navigation (mobile) */
+    .bottom-nav {
+      display:none; position:fixed; bottom:0; left:0; width:100%; background:var(--nav-bg);
+      border-top:1px solid var(--border); padding:8px 0; z-index:999; justify-content:space-around;
+      box-shadow:0 -4px 12px rgba(0,0,0,0.05);
+    }
+    .bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; font-size:0.6rem; color:var(--text-muted); cursor:pointer; transition:0.2s; padding:4px 12px; border-radius:12px; border:none; background:transparent; }
+    .bottom-nav .nav-item i { font-size:1.4rem; color:var(--text-muted); transition:0.2s; }
+    .bottom-nav .nav-item.active i { color:var(--primary); }
+    .bottom-nav .nav-item.active { color:var(--primary); }
+    .bottom-nav .nav-item:hover i { color:var(--primary); }
+    .bottom-nav .nav-item .badge { background:#dc2626; color:white; font-size:0.5rem; padding:1px 6px; border-radius:40px; margin-top:1px; }
+
+    @media (max-width:700px) {
+      .main-wrapper { padding:16px; margin-bottom:70px; }
+      .header { flex-direction:column; align-items:start; gap:12px; }
+      .logo-text { font-size:1.5rem; }
+      .demo-stats { flex-direction:column; align-items:start; gap:14px; border-radius:30px; }
+      .stats-badge { gap:12px; }
+      .quick-grid { grid-template-columns:repeat(3,1fr); }
+      .security-row { flex-direction:column; align-items:start; }
+      .admin-upload-section { padding:18px; }
+      .login-box { padding:30px 20px; }
+      .add-attendance-form, .add-notice-form, .add-timetable-form, .add-marks-form, .doubt-reply-form, .add-admission-form, .add-live-form { flex-direction:column; align-items:stretch; }
+      .bottom-nav { display:flex; }
+      .student-profile { flex-direction:column; align-items:center; text-align:center; }
+      .profile-stats { justify-content:center; }
+      .app-actions { width:100%; justify-content:flex-start; margin-top:4px; }
+    }
+    @media (max-width:460px) {
+      .quick-grid { grid-template-columns:repeat(2,1fr); }
+      .module-grid { grid-template-columns:1fr; }
+      .modal-content { padding:16px; }
+      .app-actions button { font-size:0.6rem; padding:4px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============ SPLASH SCREEN ============ -->
+<div id="splashScreen">
+  <div class="splash-logo">UCC</div>
+  <div class="splash-title">Universe Coaching</div>
+  <div class="splash-sub">9th–12th · Govt Exams</div>
+</div>
+
+<!-- ============ ERROR PAGE (404) ============ -->
+<div class="error-page" id="errorPage">
+  <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+  <h1>404 - Not Found</h1>
+  <p>Oops! The page you are looking for does not exist.<br>Please go back to the home page.</p>
+  <button class="btn-home" onclick="goHome()"><i class="fas fa-home"></i> Go Back Home</button>
+</div>
+
+<!-- ============ LOGIN OVERLAY ============ -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="logo-icon" id="loginLogo">
+      <img src="logo.png" alt="UCC Logo" onerror="this.style.display='none'; document.getElementById('loginFallback').style.display='block';">
+      <span class="fallback" id="loginFallback">UCC</span>
+    </div>
+    <h2>Universe Coaching</h2>
+    <p style="color:var(--text-muted); margin-bottom:6px;">UCC · 9th–12th · Govt Exams</p>
+    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Login to access your dashboard</p>
+    <div class="login-options" id="loginOptions">
+      <button class="student-btn" id="studentLoginBtn"><i class="fas fa-user-graduate"></i> Student Login</button>
+      <button class="admin-btn" id="adminLoginBtn"><i class="fas fa-user-shield"></i> Admin Login</button>
+    </div>
+    <div class="login-form" id="studentForm">
+      <input type="text" id="studentRoll" placeholder="Roll Number" required>
+      <input type="date" id="studentDob" required>
+      <select id="studentClass">
+        <option value="">Select Class</option>
+        <option value="9th">9th</option>
+        <option value="10th">10th</option>
+        <option value="11th">11th</option>
+        <option value="12th">12th</option>
+      </select>
+      <button class="login-submit" id="studentSubmit">Login as Student</button>
+      <div class="login-error" id="studentError"></div>
+      <div class="back-link" id="backToOptions1">← Back</div>
+    </div>
+    <div class="login-form" id="adminForm">
+      <input type="text" id="adminName" placeholder="Admin Username" required>
+      <input type="password" id="adminPass" placeholder="Admin Password" required>
+      <button class="login-submit" id="adminSubmit">Login as Admin</button>
+      <div class="login-error" id="adminError"></div>
+      <div class="back-link" id="backToOptions2">← Back</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN WRAPPER ============ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon" id="headerLogo">
+        <img src="logo.png" alt="UCC Logo" onerror="this.style.display='none'; document.getElementById('headerFallback').style.display='block';">
+        <span class="fallback-logo" id="headerFallback">UCC</span>
+      </div>
+      <div class="coaching-name">
+        <span class="logo-text">Universe Coaching</span>
+        <span class="ucc-badge">UCC</span>
+        <span class="badge-gov"><i class="fas fa-graduation-cap"></i> 9th–12th · GOV</span>
+      </div>
+    </div>
+    <div class="user-profile">
+      <span class="role-badge" id="roleBadge"><i class="fas fa-user"></i> Student</span>
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <i class="fas fa-bell" title="push notifications" id="notificationIcon" style="position:relative; cursor:pointer;">
+        <span id="notifBadge" style="position:absolute; top:-6px; right:-8px; background:#dc2626; color:white; font-size:0.6rem; padding:1px 6px; border-radius:40px; display:none;">0</span>
+      </i>
+      <div class="avatar-small" id="headerAvatar" style="display:none;" title="Click to change profile picture">
+        <img id="headerAvatarImg" src="" alt="Avatar">
+        <span id="headerAvatarFallback" style="display:none;">A</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <div class="app-actions">
+        <button id="installAppBtn"><i class="fas fa-download"></i> Install App</button>
+        <button class="download-btn" id="downloadHtmlBtn"><i class="fas fa-file-download"></i> Download HTML</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STUDENT DASHBOARD ===== -->
+  <div id="studentDashboard" style="display:none;">
+    <div class="student-profile">
+      <div class="avatar" id="studentAvatar" title="Click to change profile picture">
+        <img id="studentAvatarImg" src="" alt="Avatar">
+        <span id="studentAvatarFallback" style="font-size:30px; font-weight:bold;">S</span>
+      </div>
+      <div class="info">
+        <h3 id="studentName">Student</h3>
+        <p id="studentClassInfo">Class: 9th | Roll: ---</p>
+        <div class="profile-stats">
+          <span><i class="fas fa-check-circle" style="color:#16a34a;"></i> Attendance: <span id="attPercent">0%</span></span>
+          <span><i class="fas fa-star" style="color:#facc15;"></i> Avg Marks: <span id="avgMarks">0%</span></span>
+          <span><i class="fas fa-puzzle-piece" style="color:var(--primary);"></i> Quizzes: <span id="quizCount">0</span></span>
+        </div>
+        <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="btn-soft" id="askDoubtBtn"><i class="fas fa-question-circle"></i> Ask a Doubt</button>
+          <button class="btn-soft" id="viewTimetableBtn"><i class="fas fa-calendar-alt"></i> Timetable</button>
+          <button class="btn-soft" id="viewMarksBtn"><i class="fas fa-chart-bar"></i> My Marks</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="studentAvatarInput" accept="image/*" style="display:none;">
+  </div>
+
+  <!-- Quick access -->
+  <div class="quick-grid">
+    <div class="quick-item" data-feature="live"><i class="fas fa-video"></i> Live</div>
+    <div class="quick-item" data-feature="recorded"><i class="fas fa-play-circle"></i> Recorded</div>
+    <div class="quick-item" data-feature="material"><i class="fas fa-book-open"></i> Study Mat.</div>
+    <div class="quick-item" data-feature="quiz"><i class="fas fa-puzzle-piece"></i> Quizzes</div>
+    <div class="quick-item" data-feature="analysis"><i class="fas fa-chart-simple"></i> Analysis</div>
+    <div class="quick-item" data-feature="report"><i class="fas fa-id-card"></i> Report Card</div>
+  </div>
+
+  <!-- Module Grid -->
+  <div class="module-grid">
+    <div class="module-card" data-feature="live">
+      <div class="card-header"><i class="fas fa-chalkboard"></i><h3>Live & Recorded</h3></div>
+      <div class="card-body">
+        <ul><li><i class="fas fa-circle"></i> Daily live classes (9-12)</li><li><i class="fas fa-circle"></i> Recorded lectures: Math, Sci, Bio, Physics</li><li><i class="fas fa-circle"></i> Small gov exam prep</li></ul>
+        <span class="tag"><i class="far fa-clock"></i> 24/7 access</span>
+        <div class="btn-soft" data-action="watch-demo"><i class="fas fa-play"></i> Watch demo</div>
+      </div>
+    </div>
+    <div class="module-card" data-feature="quiz">
+      <div class="card-header"><i class="fas fa-layer-group"></i><h3>Material & Quizzes</h3></div>
+      <div class="card-body">
+        <ul><li><i class="fas fa-circle"></i> Chapter-wise PDFs</li><li><i class="fas fa-circle"></i> Online quizzes & flashcards</li><li><i class="fas fa-circle"></i> Weekly test series</li></ul>
+        <span class="tag"><i class="fas fa-check-circle"></i> 200+ quizzes</span>
+        <div class="btn-soft" data-action="start-quiz"><i class="fas fa-pen-fancy"></i> Start quiz</div>
+      </div>
+    </div>
+    <div class="module-card" data-feature="analysis">
+      <div class="card-header"><i class="fas fa-chart-line"></i><h3>Tests & Analysis</h3></div>
+      <div class="card-body">
+        <ul><li><i class="fas fa-circle"></i> Subject-wise tests</li><li><i class="fas fa-circle"></i> Detailed performents analysis</li><li><i class="fas fa-circle"></i> Progress report cards</li></ul>
+        <span class="tag"><i class="fas fa-flag"></i> Rank predictor</span>
+        <div class="btn-soft" data-action="view-report"><i class="fas fa-file-alt"></i> View report</div>
+      </div>
+    </div>
+    <div class="module-card" data-feature="notify">
+      <div class="card-header"><i class="fas fa-bell"></i><h3>Notify & Privacy</h3></div>
+      <div class="card-body">
+        <ul><li><i class="fas fa-circle"></i> Push notifications (alerts, results)</li><li><i class="fas fa-circle"></i> Data security & encryption</li><li><i class="fas fa-circle"></i> Privacy control (role based)</li></ul>
+        <span class="tag"><i class="fas fa-lock"></i> ISO 27001</span>
+        <div class="btn-soft" data-action="view-notices"><i class="fas fa-bullhorn"></i> View Notices</div>
+      </div>
+    </div>
+    <!-- Attendance Management – Admin Only -->
+    <div class="module-card admin-only" id="attendanceCard">
+      <div class="card-header"><i class="fas fa-clipboard-list"></i><h3>Attendance Mgmt</h3></div>
+      <div class="card-body">
+        <ul><li><i class="fas fa-circle"></i> Daily attendance log</li><li><i class="fas fa-circle"></i> Subject-wise trackers</li><li><i class="fas fa-circle"></i> Leave & holiday mgmt</li></ul>
+        <span class="tag"><i class="fas fa-calendar-day"></i> 95% avg</span>
+        <div class="btn-soft" data-action="manage-attendance"><i class="fas fa-qrcode"></i> Scan & mark</div>
+      </div>
+    </div>
+    <!-- Payment card removed -->
+  </div>
+
+  <!-- Demo & Stats -->
+  <div class="demo-stats">
+    <div class="demo-btn" data-action="free-demo"><i class="fas fa-play-circle"></i> Free Demo Class · UCC</div>
+    <div class="stats-badge">
+      <span><i class="fas fa-users"></i> <span id="totalStudents">0</span> students</span>
+      <span><i class="fas fa-clock"></i> 9–12 · gov prep</span>
+      <span><i class="fas fa-star"></i> 4.9 ⭐</span>
+    </div>
+  </div>
+
+  <!-- Security Row -->
+  <div class="security-row">
+    <div class="security-badge">
+      <span><i class="fas fa-lock" style="color:var(--primary);"></i> Data encrypted</span>
+      <span><i class="fas fa-user-shield"></i> Privacy control</span>
+      <span class="privacy-tag"><i class="fas fa-eye-slash"></i> Role-based access</span>
+    </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <div class="attendance-track admin-only-inline" id="attendanceTracker">
+        <i class="fas fa-fingerprint"></i> Attendance tracker <span style="font-weight:600; margin-left:6px;">●</span>
+      </div>
+      <div class="push-mock"><i class="fas fa-bell"></i> Push notifications <span style="background:var(--primary); padding:2px 12px; border-radius:30px; font-size:0.6rem;">LIVE</span></div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN DASHBOARD ===== -->
+  <div class="admin-dashboard admin-only" id="adminDashboard">
+    <h3><i class="fas fa-database"></i> Admin Dashboard</h3>
+    <div class="dashboard-tabs">
+      <button class="active" data-tab="students">Students</button>
+      <button data-tab="admissions">Admissions</button>
+      <button data-tab="attendance">Attendance</button>
+      <button data-tab="videos">Videos</button>
+      <button data-tab="sessions">Sessions</button>
+      <button data-tab="notices">Notices</button>
+      <button data-tab="timetable">Timetable</button>
+      <button data-tab="marks">Marks</button>
+      <button data-tab="doubts">Doubts</button>
+      <button data-tab="liveSettings">Live Settings</button>
+    </div>
+
+    <!-- Students -->
+    <div class="tab-content active" id="tab-students">
+      <table class="data-table"><thead><tr><th>Roll</th><th>Name</th><th>Class</th><th>DOB</th><th>Status</th><th>Actions</th></tr></thead><tbody id="studentTableBody"></tbody></table>
+    </div>
+
+    <!-- Admissions -->
+    <div class="tab-content" id="tab-admissions">
+      <h4 style="margin-bottom:8px;">➕ Add New Student</h4>
+      <div class="add-admission-form">
+        <input type="text" id="adRoll" placeholder="Roll Number *" required>
+        <input type="text" id="adName" placeholder="Full Name *" required>
+        <select id="adClass"><option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option></select>
+        <input type="date" id="adDob" placeholder="DOB">
+        <input type="text" id="adParent" placeholder="Parent Contact">
+        <input type="text" id="adAddress" placeholder="Address">
+        <select id="adStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+        <button id="addAdmissionBtn"><i class="fas fa-user-plus"></i> Add Student</button>
+      </div>
+      <div id="admissionStatus" style="margin-bottom:12px; font-weight:500;"></div>
+      <h4>📋 All Students</h4>
+      <table class="data-table"><thead><tr><th>Roll</th><th>Name</th><th>Class</th><th>DOB</th><th>Parent</th><th>Address</th><th>Status</th><th>Admission Date</th><th>Actions</th></tr></thead><tbody id="admissionTableBody"></tbody></table>
+    </div>
+
+    <!-- Attendance -->
+    <div class="tab-content" id="tab-attendance">
+      <div class="add-attendance-form">
+        <input type="text" id="attRoll" placeholder="Roll Number">
+        <input type="date" id="attDate">
+        <input type="text" id="attSubject" placeholder="Subject">
+        <select id="attStatus"><option value="Present">Present</option><option value="Absent">Absent</option><option value="Leave">Leave</option></select>
+        <button id="addAttendanceBtn"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <table class="data-table"><thead><tr><th>Roll</th><th>Date</th><th>Subject</th><th>Status</th><th>Actions</th></tr></thead><tbody id="attendanceTableBody"></tbody></table>
+    </div>
+
+    <!-- Videos -->
+    <div class="tab-content" id="tab-videos">
+      <table class="data-table"><thead><tr><th>Title</th><th>Subject</th><th>Class</th><th>File</th><th>Upload Date</th><th>Actions</th></tr></thead><tbody id="videoTableBody"></tbody></table>
+    </div>
+
+    <!-- Sessions -->
+    <div class="tab-content" id="tab-sessions">
+      <h4>Active Sessions</h4>
+      <table class="data-table"><thead><tr><th>User</th><th>Role</th><th>Device ID</th><th>Login Time</th><th>Actions</th></tr></thead><tbody id="sessionTableBody"></tbody></table>
+    </div>
+
+    <!-- Notices -->
+    <div class="tab-content" id="tab-notices">
+      <div class="add-notice-form">
+        <input type="text" id="noticeTitle" placeholder="Notice Title">
+        <textarea id="noticeContent" placeholder="Notice Content" style="flex:1; min-width:200px; padding:10px; border-radius:20px; border:1px solid var(--border); background:var(--input-bg); color:var(--text);"></textarea>
+        <select id="noticeClass"><option value="all">All Classes</option><option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option></select>
+        <button id="addNoticeBtn"><i class="fas fa-plus"></i> Post</button>
+      </div>
+      <table class="data-table"><thead><tr><th>Title</th><th>Content</th><th>Class</th><th>Date</th><th>Actions</th></tr></thead><tbody id="noticeTableBody"></tbody></table>
+    </div>
+
+    <!-- Timetable -->
+    <div class="tab-content" id="tab-timetable">
+      <div class="add-timetable-form">
+        <select id="ttClass"><option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option></select>
+        <input type="text" id="ttDay" placeholder="Day (Mon)">
+        <input type="text" id="ttTime" placeholder="Time (10:00 AM)">
+        <input type="text" id="ttSubject" placeholder="Subject">
+        <input type="text" id="ttTeacher" placeholder="Teacher">
+        <button id="addTimetableBtn"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <table class="data-table"><thead><tr><th>Class</th><th>Day</th><th>Time</th><th>Subject</th><th>Teacher</th><th>Actions</th></tr></thead><tbody id="timetableTableBody"></tbody></table>
+    </div>
+
+    <!-- Marks -->
+    <div class="tab-content" id="tab-marks">
+      <div class="add-marks-form">
+        <input type="text" id="marksRoll" placeholder="Roll Number">
+        <input type="text" id="marksSubject" placeholder="Subject">
+        <input type="number" id="marksObtained" placeholder="Marks Obtained">
+        <input type="number" id="marksTotal" placeholder="Total Marks">
+        <input type="text" id="marksExam" placeholder="Exam Name">
+        <button id="addMarksBtn"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <table class="data-table"><thead><tr><th>Roll</th><th>Subject</th><th>Marks</th><th>Total</th><th>%</th><th>Exam</th><th>Actions</th></tr></thead><tbody id="marksTableBody"></tbody></table>
+    </div>
+
+    <!-- Doubts -->
+    <div class="tab-content" id="tab-doubts">
+      <table class="data-table"><thead><tr><th>Student</th><th>Question</th><th>Reply</th><th>Status</th><th>Actions</th></tr></thead><tbody id="doubtTableBody"></tbody></table>
+      <div class="doubt-reply-form" style="margin-top:12px;">
+        <input type="text" id="doubtReplyId" placeholder="Doubt ID" style="flex:0.5; min-width:80px;">
+        <input type="text" id="doubtReplyText" placeholder="Reply" style="flex:2;">
+        <button id="replyDoubtBtn"><i class="fas fa-reply"></i> Reply</button>
+      </div>
+    </div>
+
+    <!-- Live Settings -->
+    <div class="tab-content" id="tab-liveSettings">
+      <h4>🔴 Live Video Link Settings</h4>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">Paste the YouTube embed URL that students will see during live classes.</p>
+      <div class="add-live-form">
+        <input type="text" id="liveLinkInput" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" style="flex:2;">
+        <button id="saveLiveLinkBtn"><i class="fas fa-save"></i> Save Link</button>
+      </div>
+      <div id="liveLinkStatus" style="margin-bottom:8px; font-weight:500;"></div>
+      <p><strong>Current Live Link:</strong> <span id="currentLiveLink" style="color:var(--primary); word-break:break-all;"></span></p>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-top:8px;">💡 You can get the embed URL from any YouTube video by clicking "Share" → "Embed" and copying the src URL.</p>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN UPLOAD & SETTINGS ===== -->
+  <div class="admin-upload-section admin-only" id="adminUploadSection">
+    <div class="admin-header">
+      <i class="fas fa-user-shield"></i>
+      <h2>Admin Panel – Video Upload</h2>
+      <span class="lock-badge"><i class="fas fa-lock"></i> Owner only</span>
+    </div>
+    <div class="upload-form">
+      <form id="videoUploadForm" onsubmit="return handleUpload(event)">
+        <div class="form-group">
+          <label>Video Title *</label>
+          <input type="text" id="videoTitle" placeholder="e.g. Physics – Motion (Class 9)" required>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="videoSubject">
+            <option value="Physics">Physics</option><option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option><option value="Mathematics">Mathematics</option>
+            <option value="Science">Science (9-10)</option><option value="Govt Exam">Govt Exam Prep</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Class</label>
+          <select id="videoClass"><option value="9th">9th</option><option value="10th">10th</option><option value="11th">11th</option><option value="12th">12th</option><option value="All">All (Govt Exam)</option></select>
+        </div>
+        <div class="form-group">
+          <label>Video File (MP4 / WebM) *</label>
+          <input type="file" id="videoFile" accept="video/mp4,video/webm" required>
+        </div>
+        <button type="submit" class="upload-btn"><i class="fas fa-cloud-upload-alt"></i> Upload Video</button>
+        <div class="upload-status" id="uploadStatus"></div>
+      </form>
+      <div class="admin-settings">
+        <button class="btn-soft" id="toggleChangeUsernameBtn"><i class="fas fa-user-edit"></i> Change Username</button>
+        <button class="btn-soft" id="toggleChangePasswordBtn"><i class="fas fa-key"></i> Change Password</button>
+        <button class="btn-soft" id="changeProfilePicBtn"><i class="fas fa-camera"></i> Change Profile Picture</button>
+      </div>
+      <input type="file" id="adminAvatarInput" accept="image/*" style="display:none;">
+      <div class="change-form" id="changeUsernameForm">
+        <input type="password" id="currentPassForUsername" placeholder="Current Password">
+        <input type="text" id="newUsername" placeholder="New Username">
+        <button class="save-btn" id="saveUsernameBtn"><i class="fas fa-save"></i> Update</button>
+        <span class="change-status" id="usernameChangeStatus"></span>
+      </div>
+      <div class="change-form" id="changePasswordForm">
+        <input type="password" id="currentPassForPassword" placeholder="Current Password">
+        <input type="password" id="newPassword" placeholder="New Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+        <button class="save-btn" id="savePasswordBtn"><i class="fas fa-save"></i> Update</button>
+        <span class="change-status" id="passwordChangeStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODALS ===== -->
+  <div class="modal-overlay" id="liveModal"><div class="modal-content"><span class="close-modal" data-close="liveModal">&times;</span><h3><i class="fas fa-video" style="color:var(--primary);"></i> Live Class</h3><div class="video-title" id="liveTitle">Loading...</div><div class="video-wrapper"><iframe id="liveIframe" src="" allowfullscreen></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🔴 Live streaming now</p></div></div>
+  <div class="modal-overlay" id="recordedModal"><div class="modal-content"><span class="close-modal" data-close="recordedModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Recorded Lectures</h3><input class="search-input" id="videoSearch" placeholder="Search videos by subject or topic..."><div id="recordedList" class="video-list"></div></div></div>
+  <div class="modal-overlay" id="materialModal"><div class="modal-content"><span class="close-modal" data-close="materialModal">&times;</span><h3><i class="fas fa-book-open" style="color:var(--primary);"></i> Study Material</h3><p id="materialContent">Loading...</p></div></div>
+  <div class="modal-overlay" id="quizModal"><div class="modal-content"><span class="close-modal" data-close="quizModal">&times;</span><h3><i class="fas fa-puzzle-piece" style="color:var(--primary);"></i> Quiz</h3><div id="quizContent"><div class="quiz-question"><p><strong>Q1:</strong> What is the SI unit of force?</p><div class="quiz-options"><button class="quiz-opt" data-correct="false">Newton</button><button class="quiz-opt" data-correct="true">Joule</button><button class="quiz-opt" data-correct="false">Watt</button></div></div><div class="quiz-question"><p><strong>Q2:</strong> Which is a scalar quantity?</p><div class="quiz-options"><button class="quiz-opt" data-correct="true">Speed</button><button class="quiz-opt" data-correct="false">Velocity</button><button class="quiz-opt" data-correct="false">Displacement</button></div></div></div></div></div>
+  <div class="modal-overlay" id="reportModal"><div class="modal-content"><span class="close-modal" data-close="reportModal">&times;</span><h3><i class="fas fa-id-card" style="color:var(--primary);"></i> Report Card</h3><div class="report-card" id="reportContent"></div></div></div>
+  <div class="modal-overlay" id="attendanceModal"><div class="modal-content"><span class="close-modal" data-close="attendanceModal">&times;</span><h3><i class="fas fa-clipboard-list" style="color:var(--primary);"></i> My Attendance</h3><div id="attendanceViewContent" class="attendance-summary"></div></div></div>
+  <div class="modal-overlay" id="demoModal"><div class="modal-content"><span class="close-modal" data-close="demoModal">&times;</span><h3><i class="fas fa-play-circle" style="color:var(--primary);"></i> Free Demo Class</h3><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allowfullscreen></iframe></div><p style="margin-top:10px; color:var(--text-muted); font-size:0.85rem;">🎓 Sample demo lecture</p></div></div>
+  <div class="modal-overlay" id="noticesModal"><div class="modal-content"><span class="close-modal" data-close="noticesModal">&times;</span><h3><i class="fas fa-bullhorn" style="color:var(--primary);"></i> Notices</h3><div id="noticesList"></div></div></div>
+  <div class="modal-overlay" id="timetableModal"><div class="modal-content"><span class="close-modal" data-close="timetableModal">&times;</span><h3><i class="fas fa-calendar-alt" style="color:var(--primary);"></i> Timetable</h3><div id="timetableView"></div></div></div>
+  <div class="modal-overlay" id="marksModal"><div class="modal-content"><span class="close-modal" data-close="marksModal">&times;</span><h3><i class="fas fa-chart-bar" style="color:var(--primary);"></i> My Marks</h3><div id="marksView"></div></div></div>
+  <div class="modal-overlay" id="doubtModal"><div class="modal-content"><span class="close-modal" data-close="doubtModal">&times;</span><h3><i class="fas fa-question-circle" style="color:var(--primary);"></i> Ask a Doubt</h3><div class="payment-form"><textarea id="doubtQuestion" placeholder="Type your question here..." style="width:100%; padding:12px; border-radius:20px; border:1px solid var(--border); background:var(--input-bg); color:var(--text); min-height:100px;"></textarea><button class="pay-btn" id="submitDoubtBtn" style="margin-top:10px;"><i class="fas fa-paper-plane"></i> Submit Doubt</button><div id="doubtStatus" style="margin-top:8px;"></div><hr style="margin:16px 0; border-color:var(--border);"><h4>Your Doubts</h4><div id="myDoubtsList"></div></div></div></div>
+  <div class="modal-overlay" id="progressModal"><div class="modal-content"><span class="close-modal" data-close="progressModal">&times;</span><h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Progress Tracker</h3><div class="chart-container"><canvas id="progressChart"></canvas></div><div style="margin-top:16px;"><p><strong>Attendance:</strong> <span id="pAtt">0%</span></p><p><strong>Avg Marks:</strong> <span id="pMarks">0%</span></p></div></div></div>
+
+</div><!-- end main-wrapper -->
+
+<!-- ===== BOTTOM NAVIGATION ===== -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-tab="home"><i class="fas fa-home"></i> Home</button>
+  <button class="nav-item" data-tab="live"><i class="fas fa-video"></i> Live</button>
+  <button class="nav-item" data-tab="quiz"><i class="fas fa-puzzle-piece"></i> Quiz</button>
+  <button class="nav-item" data-tab="profile"><i class="fas fa-user"></i> Profile</button>
+</div>
+
+<script>
+  // ============================================================
+  //  SPLASH SCREEN
+  // ============================================================
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('splashScreen').classList.add('hidden');
+    }, 800);
+  });
+
+  // ============================================================
+  //  PWA - INSTALL APP (for mobile)
+  // ============================================================
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installAppBtn').style.display = 'inline-flex';
+  });
+
+  document.getElementById('installAppBtn').addEventListener('click', function() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(choiceResult) {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    } else {
+      alert('📱 To install this app:\n\nOn Android: Tap the menu (⋮) → "Add to Home Screen"\nOn iPhone: Tap Share (⬆) → "Add to Home Screen"\nOn Desktop: Click the install icon in the address bar');
+    }
+  });
+
+  // ============================================================
+  //  DOWNLOAD HTML
+  // ============================================================
+  document.getElementById('downloadHtmlBtn').addEventListener('click', function() {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([
+      '<!DOCTYPE html>\n' + htmlContent
+    ], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'UCC_Portal.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ============================================================
+  //  PWA MANIFEST (auto-generated)
+  // ============================================================
+  (function generateManifest() {
+    const manifest = {
+      name: 'UCC - Universe Coaching Centre',
+      short_name: 'UCC',
+      description: 'Universe Coaching Centre - 9th to 12th & Govt Exam Prep',
+      start_url: '.',
+      display: 'standalone',
+      background_color: '#f4f7fc',
+      theme_color: '#2563eb',
+      orientation: 'portrait-primary',
+      icons: [
+        {
+          src: 'data:image/svg+xml,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">' +
+            '<rect width="512" height="512" rx="80" fill="#2563eb"/>' +
+            '<text x="256" y="340" font-family="Arial, sans-serif" font-size="220" font-weight="900" fill="white" text-anchor="middle">UCC</text>' +
+            '</svg>'
+          ),
+          sizes: '512x512',
+          type: 'image/svg+xml',
+          purpose: 'any maskable'
+        }
+      ]
+    };
+
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    // If manifest link exists, update it
+    const link = document.querySelector('link[rel="manifest"]');
+    if (link) link.href = url;
+  })();
+
+  // ============================================================
+  //  SERVICE WORKER - Offline support
+  // ============================================================
+  (function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install', function(e) {
+          e.waitUntil(
+            caches.open('ucc-cache-v1').then(function(cache) {
+              return cache.addAll([
+                '.',
+                'logo.png'
+              ]).catch(function() {});
+            })
+          );
+        });
+
+        self.addEventListener('fetch', function(e) {
+          e.respondWith(
+            caches.match(e.request).then(function(response) {
+              return response || fetch(e.request);
+            }).catch(function() {
+              return new Response('Offline', { status: 503 });
+            })
+          );
+        });
+      `;
+
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+
+      navigator.serviceWorker.register(swUrl, { scope: '.' })
+        .then(function(reg) {
+          console.log('Service Worker registered successfully');
+        })
+        .catch(function(err) {
+          console.log('Service Worker registration failed:', err);
+        });
+    }
+  })();
+
+  // ============================================================
+  //  GLOBAL FUNCTIONS
+  // ============================================================
+  function showErrorPage() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainWrapper').classList.remove('visible');
+    document.getElementById('errorPage').classList.add('visible');
+  }
+
+  function goHome() {
+    document.getElementById('errorPage').classList.remove('visible');
+    if (localStorage.getItem('ucc_role')) {
+      location.reload();
+    } else {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+    }
+  }
+
+  // ============================================================
+  //  CONFIG & DATA STORE
+  // ============================================================
+  const STUDENT_MAX_SESSIONS = 2;
+  const ADMIN_MAX_SESSIONS = 1;
+  const SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000;
+
+  const DEFAULT_ADMINS = [
+    { username: 'admin1', password: 'UCC2026' },
+    { username: 'admin2', password: 'UCC2026_2' },
+    { username: 'admin3', password: 'UCC2026_3' }
+  ];
+
+  const CLASS_VIDEOS = {
+    '9th': [{ title: 'Physics - Motion (Class 9)', subject: 'Physics', file: 'motion_9.mp4' }],
+    '10th': [{ title: 'Physics - Light Reflection', subject: 'Physics', file: 'light_10.mp4' }],
+    '11th': [{ title: 'Physics - Laws of Motion', subject: 'Physics', file: 'laws_11.mp4' }],
+    '12th': [{ title: 'Physics - Electromagnetic Waves', subject: 'Physics', file: 'emwaves_12.mp4' }]
+  };
+  ['9th','10th','11th','12th'].forEach(c => {
+    CLASS_VIDEOS[c].push({ title: `Math - Chapter 1 (${c})`, subject: 'Mathematics', file: `math_${c}.mp4` });
+    CLASS_VIDEOS[c].push({ title: `Chemistry - Basics (${c})`, subject: 'Chemistry', file: `chem_${c}.mp4` });
+  });
+
+  const CLASS_MATERIAL = {
+    '9th': '📚 Class 9 Study Material: Physics (Motion, Force), Chemistry (Atoms), Math (Number Systems), Biology (Cell)',
+    '10th': '📚 Class 10 Study Material: Physics (Light, Electricity), Chemistry (Reactions), Math (Quadratic), Biology (Life Processes)',
+    '11th': '📚 Class 11 Study Material: Physics (Laws, Work), Chemistry (Periodic), Math (Sets), Biology (Cell Division)',
+    '12th': '📚 Class 12 Study Material: Physics (EM Waves), Chemistry (Organic), Math (Calculus), Biology (Genetics)'
+  };
+
+  function getData() {
+    let d = localStorage.getItem('ucc_data_v3');
+    if (d) { try { return JSON.parse(d); } catch(e) {} }
+    const init = {
+      admins: DEFAULT_ADMINS.map(a => ({...a})),
+      students: {},
+      attendance: [],
+      videos: [],
+      notices: [],
+      timetable: [],
+      marks: [],
+      doubts: [],
+      sessions: { student: [], admin: [] },
+      settings: { theme: 'light' },
+      liveLink: 'https://www.youtube.com/embed/dQw4w9WgXcQ' // default demo
+    };
+    localStorage.setItem('ucc_data_v3', JSON.stringify(init));
+    return init;
+  }
+  function saveData(d) { localStorage.setItem('ucc_data_v3', JSON.stringify(d)); }
+
+  function generateDeviceId() {
+    let id = localStorage.getItem('ucc_deviceId');
+    if (!id) { id = 'dev_' + Math.random().toString(36).substr(2,9); localStorage.setItem('ucc_deviceId',id); }
+    return id;
+  }
+  function cleanExpiredSessions(d) {
+    const now = Date.now();
+    for (let r in d.students) {
+      if (d.students[r].sessions) d.students[r].sessions = d.students[r].sessions.filter(s => (now - s.loginTime) < SESSION_EXPIRY_MS);
+      else d.students[r].sessions = [];
+    }
+    if (d.sessions.admin) d.sessions.admin = d.sessions.admin.filter(s => (now - s.loginTime) < SESSION_EXPIRY_MS);
+    else d.sessions.admin = [];
+    return d;
+  }
+  function canLogin(d, role, id, max) {
+    let sessions;
+    if (role === 'student') { if (!d.students[id]) return true; sessions = d.students[id].sessions || []; }
+    else { sessions = d.sessions.admin.filter(s => s.username === id); }
+    return sessions.length < max;
+  }
+  function addSession(d, role, id, deviceId) {
+    const now = Date.now();
+    if (role === 'student') {
+      if (!d.students[id]) return false;
+      if (!d.students[id].sessions) d.students[id].sessions = [];
+      d.students[id].sessions = d.students[id].sessions.filter(s => (now - s.loginTime) < SESSION_EXPIRY_MS);
+      d.students[id].sessions.push({ deviceId, loginTime: now });
+      if (d.students[id].sessions.length > STUDENT_MAX_SESSIONS) {
+        d.students[id].sessions.sort((a,b) => a.loginTime - b.loginTime);
+        d.students[id].sessions = d.students[id].sessions.slice(-STUDENT_MAX_SESSIONS);
+      }
+      d.students[id].lastLogin = now;
+    } else {
+      if (!d.sessions.admin) d.sessions.admin = [];
+      d.sessions.admin = d.sessions.admin.filter(s => (now - s.loginTime) < SESSION_EXPIRY_MS);
+      d.sessions.admin.push({ username: id, deviceId, loginTime: now });
+      if (d.sessions.admin.length > ADMIN_MAX_SESSIONS) {
+        d.sessions.admin.sort((a,b) => a.loginTime - b.loginTime);
+        d.sessions.admin = d.sessions.admin.slice(-ADMIN_MAX_SESSIONS);
+      }
+    }
+    return true;
+  }
+  function removeSession(d, role, id, deviceId) {
+    if (role === 'student') {
+      if (d.students[id] && d.students[id].sessions) d.students[id].sessions = d.students[id].sessions.filter(s => s.deviceId !== deviceId);
+    } else {
+      if (d.sessions.admin) d.sessions.admin = d.sessions.admin.filter(s => !(s.username === id && s.deviceId === deviceId));
+    }
+  }
+
+  // ============================================================
+  //  GLOBAL STATE
+  // ============================================================
+  let data = cleanExpiredSessions(getData());
+  saveData(data);
+  let currentRole = null, currentUser = null, currentClass = null;
+  const deviceId = generateDeviceId();
+
+  // DOM refs
+  const overlay = document.getElementById('loginOverlay');
+  const mainWrapper = document.getElementById('mainWrapper');
+  const loginOptions = document.getElementById('loginOptions');
+  const studentForm = document.getElementById('studentForm');
+  const adminForm = document.getElementById('adminForm');
+  const studentLoginBtn = document.getElementById('studentLoginBtn');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const backToOptions1 = document.getElementById('backToOptions1');
+  const backToOptions2 = document.getElementById('backToOptions2');
+  const studentSubmit = document.getElementById('studentSubmit');
+  const adminSubmit = document.getElementById('adminSubmit');
+  const studentRoll = document.getElementById('studentRoll');
+  const studentDob = document.getElementById('studentDob');
+  const studentClass = document.getElementById('studentClass');
+  const adminNameInput = document.getElementById('adminName');
+  const adminPassInput = document.getElementById('adminPass');
+  const studentError = document.getElementById('studentError');
+  const adminError = document.getElementById('adminError');
+  const roleBadge = document.getElementById('roleBadge');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const themeToggle = document.getElementById('themeToggle');
+  const studentDashboard = document.getElementById('studentDashboard');
+  const notifBadge = document.getElementById('notifBadge');
+
+  const studentAvatarImg = document.getElementById('studentAvatarImg');
+  const studentAvatarFallback = document.getElementById('studentAvatarFallback');
+  const studentAvatarInput = document.getElementById('studentAvatarInput');
+  const headerAvatar = document.getElementById('headerAvatar');
+  const headerAvatarImg = document.getElementById('headerAvatarImg');
+  const headerAvatarFallback = document.getElementById('headerAvatarFallback');
+  const adminAvatarInput = document.getElementById('adminAvatarInput');
+  const changeProfilePicBtn = document.getElementById('changeProfilePicBtn');
+
+  const adminElements = document.querySelectorAll('.admin-only');
+  const adminInlineElements = document.querySelectorAll('.admin-only-inline');
+
+  // ============================================================
+  //  UI HELPERS
+  // ============================================================
+  function showForm(f) {
+    loginOptions.style.display = 'none';
+    studentForm.classList.remove('active');
+    adminForm.classList.remove('active');
+    if (f === 'student') { studentForm.classList.add('active'); studentError.textContent = ''; }
+    else { adminForm.classList.add('active'); adminError.textContent = ''; }
+  }
+  function showOptions() {
+    loginOptions.style.display = 'flex';
+    studentForm.classList.remove('active');
+    adminForm.classList.remove('active');
+    studentError.textContent = ''; adminError.textContent = '';
+    studentRoll.value = ''; studentDob.value = ''; studentClass.value = '';
+    adminNameInput.value = ''; adminPassInput.value = '';
+  }
+  function updateAdminVisibility() {
+    const isAdmin = (currentRole === 'admin');
+    adminElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
+    adminInlineElements.forEach(el => { if (isAdmin) el.classList.add('visible'); else el.classList.remove('visible'); });
+  }
+
+  function updateStudentAvatar(roll) {
+    if (!roll) return;
+    data = getData();
+    const student = data.students[roll];
+    if (student && student.profilePic) {
+      studentAvatarImg.src = student.profilePic;
+      studentAvatarImg.style.display = 'block';
+      studentAvatarFallback.style.display = 'none';
+    } else {
+      studentAvatarImg.style.display = 'none';
+      studentAvatarFallback.style.display = 'block';
+      studentAvatarFallback.textContent = roll.charAt(0).toUpperCase();
+    }
+  }
+
+  function updateAdminAvatar(username) {
+    if (!username) return;
+    data = getData();
+    const admin = data.admins.find(a => a.username === username);
+    if (admin && admin.profilePic) {
+      headerAvatarImg.src = admin.profilePic;
+      headerAvatarImg.style.display = 'block';
+      headerAvatarFallback.style.display = 'none';
+      headerAvatar.style.display = 'flex';
+    } else {
+      headerAvatarImg.style.display = 'none';
+      headerAvatarFallback.style.display = 'block';
+      headerAvatarFallback.textContent = username.charAt(0).toUpperCase();
+      headerAvatar.style.display = 'flex';
+    }
+  }
+
+  function setRole(role, extra = {}) {
+    currentRole = role;
+    if (role === 'student') {
+      const roll = extra.roll || 'Student', cls = extra.class || '9th', dob = extra.dob || '';
+      currentClass = cls;
+      currentUser = roll;
+      roleBadge.innerHTML = `<i class="fas fa-user-graduate"></i> Student: ${roll} (${cls})`;
+      localStorage.setItem('ucc_role', 'student');
+      localStorage.setItem('ucc_student_roll', roll);
+      localStorage.setItem('ucc_student_class', cls);
+      localStorage.setItem('ucc_student_dob', dob);
+      localStorage.removeItem('ucc_admin_session');
+      studentDashboard.style.display = 'block';
+      updateStudentDashboard(roll);
+      updateStudentAvatar(roll);
+      headerAvatar.style.display = 'none';
+    } else {
+      const username = extra.username || 'Admin';
+      roleBadge.innerHTML = `<i class="fas fa-user-shield"></i> Admin: ${username}`;
+      currentUser = username;
+      currentClass = null;
+      localStorage.setItem('ucc_role', 'admin');
+      localStorage.setItem('ucc_admin_session', username);
+      localStorage.removeItem('ucc_student_roll');
+      localStorage.removeItem('ucc_student_class');
+      localStorage.removeItem('ucc_student_dob');
+      studentDashboard.style.display = 'block';
+      updateStudentDashboard(extra.roll || username);
+      updateAdminAvatar(username);
+      headerAvatar.style.display = 'flex';
+    }
+    overlay.classList.add('hidden');
+    mainWrapper.classList.add('visible');
+    document.getElementById('errorPage').classList.remove('visible');
+    updateAdminVisibility();
+    document.getElementById('changeUsernameForm').classList.remove('active');
+    document.getElementById('changePasswordForm').classList.remove('active');
+    document.getElementById('usernameChangeStatus').innerHTML = '';
+    document.getElementById('passwordChangeStatus').innerHTML = '';
+    if (role === 'admin') refreshDashboard();
+    updateNotificationBadge();
+    updateStudentCount();
+    updateLiveLinkDisplay();
+  }
+
+  function logout() {
+    if (currentRole && currentUser) {
+      data = getData();
+      removeSession(data, currentRole, currentUser, deviceId);
+      saveData(data);
+    }
+    currentRole = null; currentUser = null; currentClass = null;
+    localStorage.removeItem('ucc_role'); localStorage.removeItem('ucc_admin_session');
+    localStorage.removeItem('ucc_student_roll'); localStorage.removeItem('ucc_student_class'); localStorage.removeItem('ucc_student_dob');
+    mainWrapper.classList.remove('visible');
+    overlay.classList.remove('hidden');
+    document.getElementById('errorPage').classList.remove('visible');
+    showOptions();
+    studentDashboard.style.display = 'none';
+    headerAvatar.style.display = 'none';
+    document.getElementById('changeUsernameForm').classList.remove('active');
+    document.getElementById('changePasswordForm').classList.remove('active');
+    document.getElementById('usernameChangeStatus').innerHTML = '';
+    document.getElementById('passwordChangeStatus').innerHTML = '';
+  }
+
+  function updateStudentCount() {
+    data = getData();
+    const count = Object.keys(data.students).length;
+    document.getElementById('totalStudents').textContent = count || 0;
+  }
+
+  function updateStudentDashboard(roll) {
+    data = getData();
+    const s = data.students[roll];
+    if (!s) {
+      if (currentRole === 'admin') {
+        document.getElementById('studentName').textContent = `Admin: ${currentUser}`;
+        document.getElementById('studentClassInfo').textContent = 'Admin Panel';
+        return;
+      }
+      return;
+    }
+    const name = s.name || roll;
+    document.getElementById('studentName').textContent = `Student: ${name} (${roll})`;
+    document.getElementById('studentClassInfo').textContent = `Class: ${s.class || 'N/A'} | Roll: ${roll}`;
+    const atts = data.attendance.filter(a => a.roll === roll);
+    const total = atts.length;
+    const present = atts.filter(a => a.status === 'Present').length;
+    const pct = total > 0 ? Math.round((present/total)*100) : 0;
+    document.getElementById('attPercent').textContent = total > 0 ? pct + '%' : 'N/A';
+    const marks = data.marks.filter(m => m.roll === roll);
+    if (marks.length > 0) {
+      let totalM = 0, totalT = 0;
+      marks.forEach(m => { totalM += m.marks; totalT += m.total; });
+      document.getElementById('avgMarks').textContent = totalT > 0 ? Math.round((totalM/totalT)*100) + '%' : 'N/A';
+    } else {
+      document.getElementById('avgMarks').textContent = 'N/A';
+    }
+    document.getElementById('quizCount').textContent = marks.length || 0;
+  }
+
+  // ============================================================
+  //  LIVE LINK FUNCTIONS
+  // ============================================================
+  function updateLiveLinkDisplay() {
+    data = getData();
+    const link = data.liveLink || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+    document.getElementById('currentLiveLink').textContent = link;
+  }
+
+  document.getElementById('saveLiveLinkBtn').addEventListener('click', function() {
+    const link = document.getElementById('liveLinkInput').value.trim();
+    if (!link) {
+      document.getElementById('liveLinkStatus').innerHTML = '❌ Please enter a valid URL.';
+      document.getElementById('liveLinkStatus').style.color = '#dc2626';
+      return;
+    }
+    if (!link.startsWith('http')) {
+      document.getElementById('liveLinkStatus').innerHTML = '❌ Please enter a valid URL starting with http:// or https://';
+      document.getElementById('liveLinkStatus').style.color = '#dc2626';
+      return;
+    }
+    data = getData();
+    data.liveLink = link;
+    saveData(data);
+    document.getElementById('liveLinkStatus').innerHTML = '✅ Live link updated successfully!';
+    document.getElementById('liveLinkStatus').style.color = '#16a34a';
+    document.getElementById('liveLinkInput').value = '';
+    updateLiveLinkDisplay();
+  });
+
+  // ============================================================
+  //  PROFILE PICTURE UPLOAD
+  // ============================================================
+  function handleProfilePicUpload(file, type, identifier) {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image size must be less than 2MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64 = e.target.result;
+      data = getData();
+      if (type === 'student') {
+        if (data.students[identifier]) {
+          data.students[identifier].profilePic = base64;
+          saveData(data);
+          updateStudentAvatar(identifier);
+        }
+      } else if (type === 'admin') {
+        const admin = data.admins.find(a => a.username === identifier);
+        if (admin) {
+          admin.profilePic = base64;
+          saveData(data);
+          updateAdminAvatar(identifier);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('studentAvatar').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') {
+      studentAvatarInput.click();
+    }
+  });
+  studentAvatarInput.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+      if (currentRole === 'student') {
+        handleProfilePicUpload(this.files[0], 'student', currentUser);
+      } else if (currentRole === 'admin') {
+        alert('Admin profile picture can be changed via "Change Profile Picture" button in Admin Settings.');
+      }
+      this.value = '';
+    }
+  });
+
+  headerAvatar.addEventListener('click', function() {
+    if (currentRole === 'admin') adminAvatarInput.click();
+  });
+  adminAvatarInput.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+      handleProfilePicUpload(this.files[0], 'admin', currentUser);
+      this.value = '';
+    }
+  });
+  changeProfilePicBtn.addEventListener('click', function() {
+    if (currentRole === 'admin') adminAvatarInput.click();
+  });
+
+  // ============================================================
+  //  THEME TOGGLE
+  // ============================================================
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    localStorage.setItem('ucc_theme', theme);
+  }
+  const savedTheme = localStorage.getItem('ucc_theme') || 'light';
+  applyTheme(savedTheme);
+  themeToggle.addEventListener('click', function() {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // ============================================================
+  //  NOTIFICATION BADGE
+  // ============================================================
+  function updateNotificationBadge() {
+    data = getData();
+    let unread = 0;
+    if (currentRole === 'student' || currentRole === 'admin') {
+      const notices = data.notices.filter(n => n.class === 'all' || n.class === currentClass);
+      unread = notices.length;
+      if (currentRole === 'admin') {
+        unread += data.doubts.filter(d => d.status === 'pending').length;
+      }
+    }
+    if (unread > 0) {
+      notifBadge.style.display = 'inline';
+      notifBadge.textContent = unread;
+    } else {
+      notifBadge.style.display = 'none';
+    }
+  }
+
+  document.getElementById('notificationIcon').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') {
+      data = getData();
+      const notices = data.notices.filter(n => n.class === 'all' || n.class === currentClass);
+      if (notices.length === 0 && currentRole === 'student') {
+        alert('📭 No new notifications.');
+      } else {
+        let msg = '📢 Notices:\n\n';
+        notices.forEach(n => msg += `📌 ${n.title}\n${n.content}\n📅 ${n.date}\n\n`);
+        if (currentRole === 'admin') {
+          const pending = data.doubts.filter(d => d.status === 'pending');
+          if (pending.length > 0) {
+            msg += '❓ Pending Doubts:\n';
+            pending.forEach(d => msg += `ID: ${d.id} | ${d.roll}\nQ: ${d.question}\n\n`);
+          }
+        }
+        alert(msg);
+      }
+    } else {
+      alert('Please login first.');
+    }
+  });
+
+  // ============================================================
+  //  DASHBOARD REFRESH (Admin)
+  // ============================================================
+  function refreshDashboard() {
+    data = getData();
+
+    const st = document.getElementById('studentTableBody');
+    st.innerHTML = '';
+    for (let r in data.students) {
+      const s = data.students[r];
+      st.innerHTML += `<tr><td>${r}</td><td>${s.name||'N/A'}</td><td>${s.class||'N/A'}</td><td>${s.dob||''}</td>
+        <td><span style="color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status||'Active'}</span></td>
+        <td><button class="delete-btn" onclick="deleteStudent('${r}')">Delete</button></td></tr>`;
+    }
+
+    const at = document.getElementById('admissionTableBody');
+    at.innerHTML = '';
+    for (let r in data.students) {
+      const s = data.students[r];
+      at.innerHTML += `<tr><td>${r}</td><td>${s.name||'N/A'}</td><td>${s.class||'N/A'}</td><td>${s.dob||''}</td>
+        <td>${s.parent||'—'}</td><td>${s.address||'—'}</td>
+        <td><span style="color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status||'Active'}</span></td>
+        <td>${s.admissionDate||new Date().toLocaleDateString()}</td>
+        <td><button class="delete-btn" onclick="deleteStudent('${r}')">Delete</button></td></tr>`;
+    }
+
+    const attTbody = document.getElementById('attendanceTableBody');
+    attTbody.innerHTML = '';
+    data.attendance.forEach((a,i) => {
+      attTbody.innerHTML += `<tr><td>${a.roll}</td><td>${a.date}</td><td>${a.subject}</td><td>${a.status}</td>
+        <td><button class="delete-btn" onclick="deleteAttendance(${i})">Delete</button></td></tr>`;
+    });
+
+    const vt = document.getElementById('videoTableBody');
+    vt.innerHTML = '';
+    data.videos.forEach((v,i) => {
+      vt.innerHTML += `<tr><td>${v.title}</td><td>${v.subject}</td><td>${v.class}</td><td>${v.file}</td><td>${v.uploadDate}</td>
+        <td><button class="delete-btn" onclick="deleteVideo(${i})">Delete</button></td></tr>`;
+    });
+
+    const sst = document.getElementById('sessionTableBody');
+    sst.innerHTML = '';
+    for (let r in data.students) {
+      (data.students[r].sessions||[]).forEach(s => {
+        sst.innerHTML += `<tr><td>${r}</td><td>Student</td><td>${s.deviceId}</td><td>${new Date(s.loginTime).toLocaleString()}</td>
+          <td><button class="delete-btn" onclick="killSession('student','${r}','${s.deviceId}')">Kill</button></td></tr>`;
+      });
+    }
+    (data.sessions.admin||[]).forEach(s => {
+      sst.innerHTML += `<tr><td>${s.username}</td><td>Admin</td><td>${s.deviceId}</td><td>${new Date(s.loginTime).toLocaleString()}</td>
+        <td><button class="delete-btn" onclick="killSession('admin','${s.username}','${s.deviceId}')">Kill</button></td></tr>`;
+    });
+
+    const nt = document.getElementById('noticeTableBody');
+    nt.innerHTML = '';
+    data.notices.forEach((n,i) => {
+      nt.innerHTML += `<tr><td>${n.title}</td><td>${n.content}</td><td>${n.class}</td><td>${n.date}</td>
+        <td><button class="delete-btn" onclick="deleteNotice(${i})">Delete</button></td></tr>`;
+    });
+
+    const tt = document.getElementById('timetableTableBody');
+    tt.innerHTML = '';
+    data.timetable.forEach((t,i) => {
+      tt.innerHTML += `<tr><td>${t.class}</td><td>${t.day}</td><td>${t.time}</td><td>${t.subject}</td><td>${t.teacher||''}</td>
+        <td><button class="delete-btn" onclick="deleteTimetable(${i})">Delete</button></td></tr>`;
+    });
+
+    const mt = document.getElementById('marksTableBody');
+    mt.innerHTML = '';
+    data.marks.forEach((m,i) => {
+      const pct = m.total > 0 ? Math.round((m.marks/m.total)*100) : 0;
+      mt.innerHTML += `<tr><td>${m.roll}</td><td>${m.subject}</td><td>${m.marks}</td><td>${m.total}</td><td>${pct}%</td><td>${m.exam||''}</td>
+        <td><button class="delete-btn" onclick="deleteMarks(${i})">Delete</button></td></tr>`;
+    });
+
+    const dt = document.getElementById('doubtTableBody');
+    dt.innerHTML = '';
+    data.doubts.forEach((d,i) => {
+      const status = d.status === 'replied' ? '✅ Replied' : '⏳ Pending';
+      dt.innerHTML += `<tr><td>${d.roll}</td><td>${d.question}</td><td>${d.reply||'—'}</td><td>${status}</td>
+        <td><button class="delete-btn" onclick="deleteDoubt(${i})">Delete</button></td></tr>`;
+    });
+
+    updateStudentCount();
+    updateNotificationBadge();
+    updateLiveLinkDisplay();
+  }
+
+  // ============================================================
+  //  DELETE FUNCTIONS
+  // ============================================================
+  window.deleteStudent = function(roll) {
+    if (confirm(`Delete student ${roll} and all data?`)) {
+      data = getData();
+      delete data.students[roll];
+      data.attendance = data.attendance.filter(a => a.roll !== roll);
+      data.marks = data.marks.filter(m => m.roll !== roll);
+      saveData(data);
+      refreshDashboard();
+    }
+  };
+  window.deleteAttendance = function(idx) {
+    if (confirm('Delete this attendance?')) { data = getData(); data.attendance.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.deleteVideo = function(idx) {
+    if (confirm('Delete this video?')) { data = getData(); data.videos.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.deleteNotice = function(idx) {
+    if (confirm('Delete this notice?')) { data = getData(); data.notices.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.deleteTimetable = function(idx) {
+    if (confirm('Delete this timetable entry?')) { data = getData(); data.timetable.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.deleteMarks = function(idx) {
+    if (confirm('Delete this marks entry?')) { data = getData(); data.marks.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.deleteDoubt = function(idx) {
+    if (confirm('Delete this doubt?')) { data = getData(); data.doubts.splice(idx,1); saveData(data); refreshDashboard(); }
+  };
+  window.killSession = function(role, id, devId) {
+    if (confirm('Force logout this session?')) { data = getData(); removeSession(data, role, id, devId); saveData(data); refreshDashboard(); }
+  };
+
+  // ============================================================
+  //  ADD FUNCTIONS
+  // ============================================================
+  document.getElementById('addAdmissionBtn').addEventListener('click', function() {
+    const roll = document.getElementById('adRoll').value.trim();
+    const name = document.getElementById('adName').value.trim();
+    const cls = document.getElementById('adClass').value;
+    const dob = document.getElementById('adDob').value;
+    const parent = document.getElementById('adParent').value.trim();
+    const address = document.getElementById('adAddress').value.trim();
+    const status = document.getElementById('adStatus').value;
+
+    if (!roll || !name) {
+      document.getElementById('admissionStatus').innerHTML = '❌ Roll Number and Name are required.';
+      document.getElementById('admissionStatus').style.color = '#dc2626';
+      return;
+    }
+
+    data = getData();
+    if (data.students[roll]) {
+      document.getElementById('admissionStatus').innerHTML = '❌ Student with this Roll Number already exists!';
+      document.getElementById('admissionStatus').style.color = '#dc2626';
+      return;
+    }
+
+    data.students[roll] = {
+      name, class: cls, dob, parent, address, status,
+      admissionDate: new Date().toLocaleDateString(),
+      sessions: [], lastLogin: null
+    };
+    saveData(data);
+    document.getElementById('admissionStatus').innerHTML = `✅ Student ${name} (${roll}) admitted successfully!`;
+    document.getElementById('admissionStatus').style.color = '#16a34a';
+    document.getElementById('adRoll').value = '';
+    document.getElementById('adName').value = '';
+    document.getElementById('adDob').value = '';
+    document.getElementById('adParent').value = '';
+    document.getElementById('adAddress').value = '';
+    refreshDashboard();
+  });
+
+  document.getElementById('addAttendanceBtn').addEventListener('click', function() {
+    const roll = document.getElementById('attRoll').value.trim();
+    const date = document.getElementById('attDate').value;
+    const subject = document.getElementById('attSubject').value.trim();
+    const status = document.getElementById('attStatus').value;
+    if (!roll || !date || !subject) { alert('Fill all fields.'); return; }
+    data = getData();
+    data.attendance.push({ roll, date, subject, status });
+    saveData(data);
+    refreshDashboard();
+    document.getElementById('attRoll').value = '';
+    document.getElementById('attDate').value = '';
+    document.getElementById('attSubject').value = '';
+  });
+
+  document.getElementById('addNoticeBtn').addEventListener('click', function() {
+    const title = document.getElementById('noticeTitle').value.trim();
+    const content = document.getElementById('noticeContent').value.trim();
+    const cls = document.getElementById('noticeClass').value;
+    if (!title || !content) { alert('Fill title and content.'); return; }
+    data = getData();
+    data.notices.push({ title, content, class: cls, date: new Date().toLocaleString() });
+    saveData(data);
+    refreshDashboard();
+    document.getElementById('noticeTitle').value = '';
+    document.getElementById('noticeContent').value = '';
+    updateNotificationBadge();
+  });
+
+  document.getElementById('addTimetableBtn').addEventListener('click', function() {
+    const cls = document.getElementById('ttClass').value;
+    const day = document.getElementById('ttDay').value.trim();
+    const time = document.getElementById('ttTime').value.trim();
+    const subject = document.getElementById('ttSubject').value.trim();
+    const teacher = document.getElementById('ttTeacher').value.trim();
+    if (!cls || !day || !time || !subject) { alert('Fill all fields.'); return; }
+    data = getData();
+    data.timetable.push({ class: cls, day, time, subject, teacher });
+    saveData(data);
+    refreshDashboard();
+    document.getElementById('ttDay').value = '';
+    document.getElementById('ttTime').value = '';
+    document.getElementById('ttSubject').value = '';
+    document.getElementById('ttTeacher').value = '';
+  });
+
+  document.getElementById('addMarksBtn').addEventListener('click', function() {
+    const roll = document.getElementById('marksRoll').value.trim();
+    const subject = document.getElementById('marksSubject').value.trim();
+    const marks = parseFloat(document.getElementById('marksObtained').value);
+    const total = parseFloat(document.getElementById('marksTotal').value);
+    const exam = document.getElementById('marksExam').value.trim();
+    if (!roll || !subject || isNaN(marks) || isNaN(total) || total <= 0) { alert('Fill all fields correctly.'); return; }
+    data = getData();
+    data.marks.push({ roll, subject, marks, total, exam: exam || 'Regular' });
+    saveData(data);
+    refreshDashboard();
+    document.getElementById('marksRoll').value = '';
+    document.getElementById('marksSubject').value = '';
+    document.getElementById('marksObtained').value = '';
+    document.getElementById('marksTotal').value = '';
+    document.getElementById('marksExam').value = '';
+  });
+
+  document.getElementById('replyDoubtBtn').addEventListener('click', function() {
+    const id = parseInt(document.getElementById('doubtReplyId').value);
+    const reply = document.getElementById('doubtReplyText').value.trim();
+    if (!id || !reply) { alert('Enter Doubt ID and reply.'); return; }
+    data = getData();
+    const doubt = data.doubts.find(d => d.id === id);
+    if (!doubt) { alert('Doubt not found.'); return; }
+    doubt.reply = reply;
+    doubt.status = 'replied';
+    saveData(data);
+    refreshDashboard();
+    document.getElementById('doubtReplyId').value = '';
+    document.getElementById('doubtReplyText').value = '';
+    updateNotificationBadge();
+  });
+
+  // Tab switching
+  document.querySelectorAll('.dashboard-tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.dashboard-tabs button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const tab = this.dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      const target = document.getElementById('tab-' + tab);
+      if (target) target.classList.add('active');
+      else showErrorPage();
+      if (tab === 'liveSettings') updateLiveLinkDisplay();
+    });
+  });
+
+  // ============================================================
+  //  LOGIN EVENTS
+  // ============================================================
+  studentLoginBtn.addEventListener('click', function() { showForm('student'); });
+  adminLoginBtn.addEventListener('click', function() { showForm('admin'); });
+  backToOptions1.addEventListener('click', showOptions);
+  backToOptions2.addEventListener('click', showOptions);
+
+  studentSubmit.addEventListener('click', function() {
+    const roll = studentRoll.value.trim();
+    const dob = studentDob.value;
+    const cls = studentClass.value;
+
+    if (!roll) { studentError.textContent = '❌ Enter Roll Number.'; return; }
+    if (!dob) { studentError.textContent = '❌ Select Date of Birth.'; return; }
+    if (!cls) { studentError.textContent = '❌ Select Class.'; return; }
+    if (new Date(dob) > new Date()) { studentError.textContent = '❌ DOB cannot be future.'; return; }
+
+    data = getData();
+    data = cleanExpiredSessions(data);
+
+    if (!data.students[roll]) {
+      studentError.textContent = '❌ Student not found! Please contact admin for admission.';
+      return;
+    }
+
+    const student = data.students[roll];
+    if (student.class !== cls) {
+      studentError.textContent = '❌ Class does not match records.';
+      return;
+    }
+    if (student.dob && student.dob !== dob) {
+      studentError.textContent = '❌ Date of Birth does not match records.';
+      return;
+    }
+
+    if (!canLogin(data, 'student', roll, STUDENT_MAX_SESSIONS)) {
+      studentError.textContent = `❌ Already logged in on ${STUDENT_MAX_SESSIONS} devices.`;
+      return;
+    }
+
+    addSession(data, 'student', roll, deviceId);
+    saveData(data);
+    setRole('student', { roll, dob, class: cls });
+  });
+
+  adminSubmit.addEventListener('click', function() {
+    const username = adminNameInput.value.trim();
+    const pass = adminPassInput.value.trim();
+    if (!username) { adminError.textContent = '❌ Enter username.'; return; }
+    if (!pass) { adminError.textContent = '❌ Enter password.'; return; }
+    data = getData();
+    const admin = data.admins.find(a => a.username === username);
+    if (!admin) { adminError.textContent = '❌ Admin not found.'; return; }
+    if (admin.password !== pass) { adminError.textContent = '❌ Wrong password!'; return; }
+
+    data = cleanExpiredSessions(data);
+    if (data.sessions.admin.filter(s => s.username === username).length >= ADMIN_MAX_SESSIONS) {
+      adminError.textContent = `❌ Already logged in on ${ADMIN_MAX_SESSIONS} device.`;
+      return;
+    }
+    addSession(data, 'admin', username, deviceId);
+    saveData(data);
+    setRole('admin', { username, roll: username });
+  });
+
+  studentRoll.addEventListener('keydown', e => { if (e.key === 'Enter') studentSubmit.click(); });
+  studentDob.addEventListener('keydown', e => { if (e.key === 'Enter') studentSubmit.click(); });
+  studentClass.addEventListener('keydown', e => { if (e.key === 'Enter') studentSubmit.click(); });
+  adminNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') adminSubmit.click(); });
+  adminPassInput.addEventListener('keydown', e => { if (e.key === 'Enter') adminSubmit.click(); });
+
+  logoutBtn.addEventListener('click', logout);
+
+  // ============================================================
+  //  CHECK SESSION
+  // ============================================================
+  const savedRole = localStorage.getItem('ucc_role');
+  if (savedRole === 'student') {
+    const roll = localStorage.getItem('ucc_student_roll');
+    const cls = localStorage.getItem('ucc_student_class');
+    const dob = localStorage.getItem('ucc_student_dob');
+    if (roll) {
+      data = getData();
+      data = cleanExpiredSessions(data);
+      if (data.students[roll] && data.students[roll].sessions && data.students[roll].sessions.some(s => s.deviceId === deviceId)) {
+        setRole('student', { roll, dob, class: cls || '9th' });
+      } else { localStorage.removeItem('ucc_role'); localStorage.removeItem('ucc_student_roll'); localStorage.removeItem('ucc_student_class'); localStorage.removeItem('ucc_student_dob'); showOptions(); }
+    } else { showOptions(); }
+  } else if (savedRole === 'admin') {
+    const username = localStorage.getItem('ucc_admin_session');
+    if (username) {
+      data = getData();
+      data = cleanExpiredSessions(data);
+      if (data.sessions.admin && data.sessions.admin.some(s => s.username === username && s.deviceId === deviceId)) {
+        setRole('admin', { username, roll: username });
+      } else { localStorage.removeItem('ucc_role'); localStorage.removeItem('ucc_admin_session'); showOptions(); }
+    } else { showOptions(); }
+  } else { showOptions(); }
+
+  // ============================================================
+  //  VIDEO UPLOAD
+  // ============================================================
+  window.handleUpload = function(e) {
+    e.preventDefault();
+    const title = document.getElementById('videoTitle').value.trim();
+    const subject = document.getElementById('videoSubject').value;
+    const cls = document.getElementById('videoClass').value;
+    const file = document.getElementById('videoFile').files[0];
+    const statusDiv = document.getElementById('uploadStatus');
+    if (!title) { showStatus('error', 'Enter video title.', statusDiv); return false; }
+    if (!file) { showStatus('error', 'Select video file.', statusDiv); return false; }
+    data = getData();
+    data.videos.push({ title, subject, class: cls, file: file.name, uploadDate: new Date().toLocaleString() });
+    saveData(data);
+    showStatus('success', `✅ "${title}" uploaded (simulated).`, statusDiv);
+    if (currentRole === 'admin') refreshDashboard();
+    return false;
+  };
+  function showStatus(type, msg, div) { div.className = 'upload-status ' + type; div.style.display = 'block'; div.innerHTML = msg; setTimeout(() => { div.style.display = 'none'; }, 5000); }
+
+  // ============================================================
+  //  ADMIN SETTINGS
+  // ============================================================
+  document.getElementById('toggleChangeUsernameBtn').addEventListener('click', function() {
+    if (currentRole !== 'admin') { alert('Only admin.'); return; }
+    document.getElementById('changeUsernameForm').classList.toggle('active');
+    document.getElementById('changePasswordForm').classList.remove('active');
+    document.getElementById('usernameChangeStatus').innerHTML = '';
+  });
+  document.getElementById('toggleChangePasswordBtn').addEventListener('click', function() {
+    if (currentRole !== 'admin') { alert('Only admin.'); return; }
+    document.getElementById('changePasswordForm').classList.toggle('active');
+    document.getElementById('changeUsernameForm').classList.remove('active');
+    document.getElementById('passwordChangeStatus').innerHTML = '';
+  });
+  document.getElementById('saveUsernameBtn').addEventListener('click', function() {
+    if (currentRole !== 'admin') return;
+    const curPass = document.getElementById('currentPassForUsername').value;
+    const newUser = document.getElementById('newUsername').value.trim();
+    data = getData();
+    const admin = data.admins.find(a => a.username === currentUser);
+    if (!admin) { document.getElementById('usernameChangeStatus').style.color = '#991b1b'; document.getElementById('usernameChangeStatus').innerHTML = '❌ Session invalid.'; return; }
+    if (curPass !== admin.password) { document.getElementById('usernameChangeStatus').style.color = '#991b1b'; document.getElementById('usernameChangeStatus').innerHTML = '❌ Wrong password.'; return; }
+    if (newUser.length < 3) { document.getElementById('usernameChangeStatus').style.color = '#991b1b'; document.getElementById('usernameChangeStatus').innerHTML = '❌ Min 3 chars.'; return; }
+    if (data.admins.some(a => a.username === newUser && a.username !== currentUser)) { document.getElementById('usernameChangeStatus').style.color = '#991b1b'; document.getElementById('usernameChangeStatus').innerHTML = '❌ Already exists.'; return; }
+    admin.username = newUser;
+    saveData(data);
+    currentUser = newUser;
+    localStorage.setItem('ucc_admin_session', newUser);
+    roleBadge.innerHTML = `<i class="fas fa-user-shield"></i> Admin: ${newUser}`;
+    document.getElementById('usernameChangeStatus').style.color = '#166534';
+    document.getElementById('usernameChangeStatus').innerHTML = `✅ Updated to "${newUser}"`;
+    document.getElementById('currentPassForUsername').value = '';
+    document.getElementById('newUsername').value = '';
+  });
+  document.getElementById('savePasswordBtn').addEventListener('click', function() {
+    if (currentRole !== 'admin') return;
+    const curPass = document.getElementById('currentPassForPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    data = getData();
+    const admin = data.admins.find(a => a.username === currentUser);
+    if (!admin) { document.getElementById('passwordChangeStatus').style.color = '#991b1b'; document.getElementById('passwordChangeStatus').innerHTML = '❌ Session invalid.'; return; }
+    if (curPass !== admin.password) { document.getElementById('passwordChangeStatus').style.color = '#991b1b'; document.getElementById('passwordChangeStatus').innerHTML = '❌ Wrong password.'; return; }
+    if (newPass.length < 4) { document.getElementById('passwordChangeStatus').style.color = '#991b1b'; document.getElementById('passwordChangeStatus').innerHTML = '❌ Min 4 chars.'; return; }
+    if (newPass !== confirm) { document.getElementById('passwordChangeStatus').style.color = '#991b1b'; document.getElementById('passwordChangeStatus').innerHTML = '❌ Passwords do not match.'; return; }
+    admin.password = newPass;
+    saveData(data);
+    document.getElementById('passwordChangeStatus').style.color = '#166534';
+    document.getElementById('passwordChangeStatus').innerHTML = '✅ Password updated!';
+    document.getElementById('currentPassForPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+  });
+
+  // ============================================================
+  //  FEATURE INTERACTIONS (Student & Admin both can use)
+  // ============================================================
+  function openModal(id) { 
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    else showErrorPage();
+  }
+  function closeModal(id) { 
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  }
+  document.querySelectorAll('.close-modal').forEach(el => {
+    el.addEventListener('click', function() { closeModal(this.dataset.close); });
+  });
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
+  });
+
+  // Live Modal - uses liveLink from data
+  function openLiveModal() {
+    data = getData();
+    const link = data.liveLink || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+    document.getElementById('liveIframe').src = link;
+    const cls = currentClass || '9th';
+    document.getElementById('liveTitle').textContent = `🔴 Live Class - ${cls}`;
+    openModal('liveModal');
+  }
+
+  function openRecordedModal() {
+    const cls = currentClass || '9th';
+    let videos = CLASS_VIDEOS[cls] || CLASS_VIDEOS['9th'];
+    data = getData();
+    const uploaded = data.videos.filter(v => v.class === cls || v.class === 'All');
+    videos = [...videos, ...uploaded];
+    const container = document.getElementById('recordedList');
+    container.innerHTML = '';
+    if (videos.length === 0) { container.innerHTML = '<p>No videos available.</p>'; return; }
+    videos.forEach(v => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span><i class="fas fa-play-circle" style="color:var(--primary);"></i> ${v.title}</span>
+        <button class="play-btn" data-video="${v.title}">▶ Play</button>`;
+      container.appendChild(li);
+    });
+    container.querySelectorAll('.play-btn').forEach(btn => {
+      btn.addEventListener('click', function() { alert(`▶ Playing: ${this.dataset.video}\n(Simulated)`); });
+    });
+    document.getElementById('videoSearch').addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      const items = container.querySelectorAll('li');
+      items.forEach(li => {
+        const text = li.textContent.toLowerCase();
+        li.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    });
+    openModal('recordedModal');
+  }
+
+  function openMaterialModal() {
+    const cls = currentClass || '9th';
+    document.getElementById('materialContent').textContent = CLASS_MATERIAL[cls] || CLASS_MATERIAL['9th'];
+    openModal('materialModal');
+  }
+
+  function openQuizModal() {
+    openModal('quizModal');
+    document.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.classList.remove('correct', 'wrong');
+      btn.disabled = false;
+      btn.onclick = function(e) {
+        if (this.disabled) return;
+        const isCorrect = this.dataset.correct === 'true';
+        if (isCorrect) { this.classList.add('correct'); alert('✅ Correct!'); }
+        else { this.classList.add('wrong'); alert('❌ Wrong. Try again!'); }
+        this.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+      };
+    });
+  }
+
+  function openReportModal() {
+    const cls = currentClass || '9th';
+    const roll = currentUser;
+    data = getData();
+    const marks = data.marks.filter(m => m.roll === roll);
+    let html = `<h4>Report Card - ${cls}</h4><table>`;
+    if (marks.length === 0) { html += '<tr><td>No marks available.</td></tr>'; }
+    else {
+      marks.forEach(m => {
+        const pct = m.total > 0 ? Math.round((m.marks/m.total)*100) : 0;
+        html += `<tr><td>${m.subject}</td><td>${m.marks}/${m.total}</td><td>${pct}%</td><td>${m.exam||''}</td></tr>`;
+      });
+    }
+    html += '</table>';
+    document.getElementById('reportContent').innerHTML = html;
+    openModal('reportModal');
+  }
+
+  function openAttendanceView() {
+    const roll = currentUser;
+    if (!roll) { alert('Login first.'); return; }
+    data = getData();
+    const myAtt = data.attendance.filter(a => a.roll === roll);
+    const container = document.getElementById('attendanceViewContent');
+    if (myAtt.length === 0) { container.innerHTML = '<p>No attendance records.</p>'; }
+    else {
+      let html = '<div class="att-row"><strong>Date</strong> <strong>Subject</strong> <strong>Status</strong></div>';
+      myAtt.forEach(a => { html += `<div class="att-row"><span>${a.date}</span> <span>${a.subject}</span> <span>${a.status}</span></div>`; });
+      container.innerHTML = html;
+    }
+    openModal('attendanceModal');
+  }
+
+  function openNoticesModal() {
+    data = getData();
+    const cls = currentClass || '9th';
+    const notices = data.notices.filter(n => n.class === 'all' || n.class === cls);
+    const container = document.getElementById('noticesList');
+    if (notices.length === 0) { container.innerHTML = '<p>📭 No notices.</p>'; }
+    else {
+      let html = '';
+      notices.forEach(n => {
+        html += `<div style="padding:12px; border-bottom:1px solid var(--border);"><strong>${n.title}</strong><p>${n.content}</p><small style="color:var(--text-muted);">📅 ${n.date}</small></div>`;
+      });
+      container.innerHTML = html;
+    }
+    openModal('noticesModal');
+  }
+
+  function openProgressModal() {
+    const roll = currentUser;
+    data = getData();
+    const atts = data.attendance.filter(a => a.roll === roll);
+    const total = atts.length;
+    const present = atts.filter(a => a.status === 'Present').length;
+    const attPct = total > 0 ? Math.round((present/total)*100) : 0;
+    const marks = data.marks.filter(m => m.roll === roll);
+    let avgPct = 0;
+    if (marks.length > 0) { let tm=0, tt=0; marks.forEach(m => { tm+=m.marks; tt+=m.total; }); avgPct = tt>0 ? Math.round((tm/tt)*100) : 0; }
+    document.getElementById('pAtt').textContent = attPct + '%';
+    document.getElementById('pMarks').textContent = avgPct + '%';
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    if (window._progressChart) { window._progressChart.destroy(); }
+    window._progressChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Attendance', 'Marks'],
+        datasets: [{
+          label: 'Progress (%)',
+          data: [attPct, avgPct],
+          backgroundColor: ['#2563eb', '#facc15'],
+          borderColor: ['#1d4ed8', '#eab308'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { max: 100, beginAtZero: true } }
+      }
+    });
+    openModal('progressModal');
+  }
+
+  document.getElementById('submitDoubtBtn').addEventListener('click', function() {
+    if (currentRole !== 'student' && currentRole !== 'admin') { alert('Please login as student or admin.'); return; }
+    const question = document.getElementById('doubtQuestion').value.trim();
+    if (!question) { document.getElementById('doubtStatus').innerHTML = '❌ Please type your question.'; return; }
+    data = getData();
+    const newId = data.doubts.length > 0 ? Math.max(...data.doubts.map(d => d.id)) + 1 : 1;
+    data.doubts.push({ id: newId, roll: currentUser, question, reply: '', status: 'pending', timestamp: Date.now() });
+    saveData(data);
+    document.getElementById('doubtStatus').innerHTML = '✅ Doubt submitted! Admin will reply soon.';
+    document.getElementById('doubtQuestion').value = '';
+    loadMyDoubts();
+    updateNotificationBadge();
+  });
+
+  function loadMyDoubts() {
+    if (currentRole !== 'student' && currentRole !== 'admin') return;
+    data = getData();
+    const myDoubts = data.doubts.filter(d => d.roll === currentUser);
+    const container = document.getElementById('myDoubtsList');
+    if (myDoubts.length === 0) { container.innerHTML = '<p>No doubts asked yet.</p>'; }
+    else {
+      let html = '';
+      myDoubts.forEach(d => {
+        const status = d.status === 'replied' ? '✅ Replied' : '⏳ Pending';
+        html += `<div style="padding:10px; border-bottom:1px solid var(--border);"><p><strong>Q:</strong> ${d.question}</p>`;
+        if (d.reply) html += `<p><strong>Reply:</strong> ${d.reply}</p>`;
+        html += `<small style="color:var(--text-muted);">Status: ${status}</small></div>`;
+      });
+      container.innerHTML = html;
+    }
+  }
+
+  function openTimetableView() {
+    data = getData();
+    const cls = currentClass || '9th';
+    const tt = data.timetable.filter(t => t.class === cls);
+    const container = document.getElementById('timetableView');
+    if (tt.length === 0) { container.innerHTML = '<p>📅 No timetable available for your class.</p>'; }
+    else {
+      let html = '<table class="data-table"><thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Teacher</th></tr></thead><tbody>';
+      tt.forEach(t => { html += `<tr><td>${t.day}</td><td>${t.time}</td><td>${t.subject}</td><td>${t.teacher||'—'}</td></tr>`; });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+    openModal('timetableModal');
+  }
+
+  function openMarksView() {
+    const roll = currentUser;
+    data = getData();
+    const marks = data.marks.filter(m => m.roll === roll);
+    const container = document.getElementById('marksView');
+    if (marks.length === 0) { container.innerHTML = '<p>📊 No marks available.</p>'; }
+    else {
+      let html = '<table class="data-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>%</th><th>Exam</th></tr></thead><tbody>';
+      marks.forEach(m => {
+        const pct = m.total > 0 ? Math.round((m.marks/m.total)*100) : 0;
+        html += `<tr><td>${m.subject}</td><td>${m.marks}</td><td>${m.total}</td><td>${pct}%</td><td>${m.exam||''}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+    openModal('marksModal');
+  }
+
+  // ============================================================
+  //  BOTTOM NAVIGATION
+  // ============================================================
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      const tab = this.dataset.tab;
+      if (tab === 'home') { window.scrollTo({top:0, behavior:'smooth'}); }
+      else if (tab === 'live') { if (currentRole === 'student' || currentRole === 'admin') openLiveModal(); else alert('Login as student or admin.'); }
+      else if (tab === 'quiz') { if (currentRole === 'student' || currentRole === 'admin') openQuizModal(); else alert('Login as student or admin.'); }
+      else if (tab === 'profile') {
+        if (currentRole === 'student' || currentRole === 'admin') {
+          document.querySelector('.student-profile').scrollIntoView({behavior:'smooth'});
+        } else { alert('Login as student or admin.'); }
+      }
+    });
+  });
+
+  // ============================================================
+  //  QUICK GRID CLICKS (for both student and admin)
+  // ============================================================
+  document.querySelectorAll('.quick-item[data-feature]').forEach(el => {
+    el.addEventListener('click', function() {
+      const f = this.dataset.feature;
+      if (currentRole === 'student' || currentRole === 'admin') {
+        if (f === 'live') openLiveModal();
+        else if (f === 'recorded') openRecordedModal();
+        else if (f === 'material') openMaterialModal();
+        else if (f === 'quiz') openQuizModal();
+        else if (f === 'analysis') openProgressModal();
+        else if (f === 'report') openReportModal();
+        else showErrorPage();
+      } else {
+        alert('Please login first.');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-action="watch-demo"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openRecordedModal(); else alert('Please login as student or admin.'); });
+  });
+  document.querySelectorAll('[data-action="start-quiz"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openQuizModal(); else alert('Please login as student or admin.'); });
+  });
+  document.querySelectorAll('[data-action="view-report"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openReportModal(); else alert('Please login as student or admin.'); });
+  });
+  document.querySelectorAll('[data-action="view-notices"]').forEach(el => {
+    el.addEventListener('click', function() { if (currentRole === 'student' || currentRole === 'admin') openNoticesModal(); else alert('Please login as student or admin.'); });
+  });
+  document.querySelector('[data-action="free-demo"]').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') openModal('demoModal');
+    else alert('Please login as student or admin.');
+  });
+  document.querySelector('[data-action="manage-attendance"]').addEventListener('click', function() {
+    if (currentRole === 'admin') { 
+      const tabBtn = document.querySelector('.dashboard-tabs button[data-tab="attendance"]');
+      if (tabBtn) tabBtn.click();
+      else showErrorPage();
+    } else if (currentRole === 'student') {
+      openAttendanceView();
+    } else {
+      alert('Please login.');
+    }
+  });
+
+  document.getElementById('askDoubtBtn').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') { openModal('doubtModal'); loadMyDoubts(); }
+    else alert('Login as student or admin.');
+  });
+  document.getElementById('viewTimetableBtn').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') openTimetableView();
+    else alert('Login as student or admin.');
+  });
+  document.getElementById('viewMarksBtn').addEventListener('click', function() {
+    if (currentRole === 'student' || currentRole === 'admin') openMarksView();
+    else alert('Login as student or admin.');
+  });
+
+  // ============================================================
+  //  INIT
+  // ============================================================
+  if (currentRole === 'admin') refreshDashboard();
+  updateStudentCount();
+  updateNotificationBadge();
+  if (currentRole === 'student' || currentRole === 'admin') {
+    updateStudentDashboard(currentUser);
+    updateStudentAvatar(currentUser);
+    updateLiveLinkDisplay();
+  }
+
+  window.addEventListener('appinstalled', function() {
+    document.getElementById('installAppBtn').style.display = 'none';
+  });
+
+  console.log('✅ UCC Portal loaded successfully!');
+  console.log('📱 To install: Click "Install App" button');
+  console.log('⬇️ To download: Click "Download HTML" button');
+  console.log('🔴 Admin can set live link from Admin Dashboard → Live Settings');
+</script>
+</body>
+</html>
